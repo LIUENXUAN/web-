@@ -1,0 +1,376 @@
+{
+  "site": {
+    "name": "林间律动营地",
+    "subtitle": "城市运动公园露营地数字孪生展示与运营管理平台",
+    "location": "西安渭南城市运动公园",
+    "description": "面向城市公园露营地的数字化展示、预约运营、活动发布与数据管理需求，构建设计展示与营地运营一体化 Web 应用系统。"
+  },
+  "zones": [
+    {
+      "id": "rv",
+      "name": "房车营地区",
+      "type": "驻留住宿",
+      "capacity": 16,
+      "status": "维护中",
+      "price": 198,
+      "description": "适合自驾家庭与周末短住游客，配套停车、补给与夜间照明。"
+    },
+    {
+      "id": "tent",
+      "name": "帐篷草坪区",
+      "type": "轻露营",
+      "capacity": 30,
+      "status": "开放",
+      "price": 88,
+      "description": "可承载帐篷露营、亲子活动、户外课堂与周末市集。"
+    },
+    {
+      "id": "waterfront",
+      "name": "亲水平台区",
+      "type": "休闲观景",
+      "capacity": 80,
+      "status": "开放",
+      "price": 0,
+      "description": "提供水岸观景、摄影打卡与安静停留空间。"
+    },
+    {
+      "id": "tower",
+      "name": "中心塔架区",
+      "type": "核心节点",
+      "capacity": 40,
+      "status": "维护中",
+      "price": 0,
+      "description": "作为营地视觉焦点，承担观景、灯光装置与自然教育功能。"
+    }
+  ],
+  "activities": [
+    {
+      "id": "a001",
+      "title": "周末星空露营夜",
+      "date": "2026-07-06",
+      "zone": "tent",
+      "quota": 24,
+      "joined": 12,
+      "status": "报名中"
+    },
+    {
+      "id": "a002",
+      "title": "自然教育亲子课堂",
+      "date": "2026-07-13",
+      "zone": "tower",
+      "quota": 30,
+      "joined": 18,
+      "status": "报名中"
+    },
+    {
+      "id": "a003",
+      "title": "房车生活体验日",
+      "date": "2026-07-20",
+      "zone": "rv",
+      "quota": 16,
+      "joined": 9,
+      "status": "报名中"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "b001",
+      "name": "张同学",
+      "phone": "138****2026",
+      "zone": "rv",
+      "date": "2026-07-06",
+      "people": 4,
+      "status": "已确认",
+      "createdAt": "2026-06-15 18:30"
+    },
+    {
+      "id": "b002",
+      "name": "李老师",
+      "phone": "139****0713",
+      "zone": "tent",
+      "date": "2026-07-13",
+      "people": 6,
+      "status": "待确认",
+      "createdAt": "2026-06-15 18:42"
+    }
+  ],
+  "feedback": [
+    {
+      "id": "f001",
+      "name": "游客A",
+      "content": "希望增加夜间导视灯和洗手间指引。",
+      "status": "待处理",
+      "createdAt": "2026-06-15 18:50"
+    },
+    {
+      "id": "f002",
+      "name": "营地运营组",
+      "content": "建议周末增加帐篷区保洁巡检频次。",
+      "status": "已处理",
+      "createdAt": "2026-06-15 19:05"
+    }
+  ],
+  "metrics": {
+    "visitors": 12860,
+    "bookingRate": 76,
+    "revenue": 426660,
+    "satisfaction": 94,
+    "modelViews": 3520,
+    "occupancyRate": 68,
+    "activityRate": 71,
+    "avgOrderValue": 196,
+    "assetHealth": 85,
+    "alertCloseRate": 67
+  },
+  "assets": [
+    {
+      "id": "as001",
+      "name": "星空帐篷组",
+      "zone": "tent",
+      "type": "住宿设施",
+      "status": "正常",
+      "priority": "中",
+      "lastCheck": "2026-06-14",
+      "health": 96,
+      "owner": "营位组"
+    },
+    {
+      "id": "as002",
+      "name": "房车补给桩",
+      "zone": "rv",
+      "type": "能源设备",
+      "status": "正常",
+      "priority": "高",
+      "lastCheck": "2026-06-15",
+      "health": 92,
+      "owner": "设备组"
+    },
+    {
+      "id": "as003",
+      "name": "亲水平台护栏",
+      "zone": "waterfront",
+      "type": "安全设施",
+      "status": "待维修",
+      "priority": "高",
+      "lastCheck": "2026-06-12",
+      "health": 68,
+      "owner": "安全组"
+    },
+    {
+      "id": "as004",
+      "name": "中心塔架灯光",
+      "zone": "tower",
+      "type": "景观设备",
+      "status": "巡检中",
+      "priority": "中",
+      "lastCheck": "2026-06-15",
+      "health": 81,
+      "owner": "工程组"
+    },
+    {
+      "id": "as005",
+      "name": "夜间导视灯",
+      "zone": "tent",
+      "type": "导视照明",
+      "status": "正常",
+      "priority": "中",
+      "lastCheck": "2026-06-13",
+      "health": 88,
+      "owner": "工程组"
+    }
+  ],
+  "inspections": [
+    {
+      "id": "i001",
+      "title": "亲水平台安全巡检",
+      "zone": "waterfront",
+      "owner": "王工",
+      "frequency": "每日",
+      "dueDate": "2026-06-18",
+      "status": "待处理",
+      "result": "护栏局部松动，需复核"
+    },
+    {
+      "id": "i002",
+      "title": "帐篷区夜间照明巡检",
+      "zone": "tent",
+      "owner": "李工",
+      "frequency": "每周",
+      "dueDate": "2026-06-19",
+      "status": "进行中",
+      "result": "导视灯亮度正常"
+    },
+    {
+      "id": "i003",
+      "title": "房车补给桩负载检查",
+      "zone": "rv",
+      "owner": "赵工",
+      "frequency": "每周",
+      "dueDate": "2026-06-20",
+      "status": "已完成",
+      "result": "设备运行稳定"
+    },
+    {
+      "id": "i004",
+      "title": "中心塔架结构例检",
+      "zone": "tower",
+      "owner": "陈工",
+      "frequency": "每月",
+      "dueDate": "2026-06-25",
+      "status": "待处理",
+      "result": "等待现场确认"
+    }
+  ],
+  "alerts": [
+    {
+      "id": "al001",
+      "title": "亲水平台护栏风险",
+      "zone": "waterfront",
+      "level": "高",
+      "type": "安全隐患",
+      "status": "处理中",
+      "createdAt": "2026-06-15 09:20",
+      "owner": "安全组"
+    },
+    {
+      "id": "al002",
+      "title": "周末帐篷区容量接近上限",
+      "zone": "tent",
+      "level": "中",
+      "type": "容量预警",
+      "status": "待处理",
+      "createdAt": "2026-06-15 11:35",
+      "owner": "运营组"
+    },
+    {
+      "id": "al003",
+      "title": "中心塔架暂停开放提示",
+      "zone": "tower",
+      "level": "低",
+      "type": "维护提示",
+      "status": "已处理",
+      "createdAt": "2026-06-14 16:10",
+      "owner": "工程组"
+    }
+  ],
+  "orders": [
+    {
+      "id": "o001",
+      "bookingId": "b001",
+      "amount": 792,
+      "channel": "小程序",
+      "status": "已支付",
+      "paidAt": "2026-06-15 18:32"
+    },
+    {
+      "id": "o002",
+      "bookingId": "b002",
+      "amount": 528,
+      "channel": "Web",
+      "status": "待支付",
+      "paidAt": ""
+    }
+  ],
+  "incidents": [
+    {
+      "id": "inc001",
+      "title": "亲水平台护栏加固处置",
+      "zone": "waterfront",
+      "severity": "P1",
+      "owner": "安全组 / 王工",
+      "status": "处理中",
+      "slaDue": "2026-06-18 18:00",
+      "source": "巡检告警",
+      "action": "封控临水侧入口，安排工程组复核并完成临时加固。"
+    },
+    {
+      "id": "inc002",
+      "title": "周末帐篷区客流分流",
+      "zone": "tent",
+      "severity": "P2",
+      "owner": "运营组 / 李老师",
+      "status": "待派单",
+      "slaDue": "2026-06-19 12:00",
+      "source": "容量预测",
+      "action": "开放房车区临时体验位，游客端提示错峰入场。"
+    },
+    {
+      "id": "inc003",
+      "title": "中心塔架灯光巡检复核",
+      "zone": "tower",
+      "severity": "P3",
+      "owner": "工程组 / 陈工",
+      "status": "观察中",
+      "slaDue": "2026-06-20 10:00",
+      "source": "设备台账",
+      "action": "完成夜间亮灯测试，确认是否恢复活动导览路线。"
+    }
+  ],
+  "auditLogs": [
+    {
+      "time": "09:20",
+      "actor": "安全组",
+      "event": "创建高风险告警：亲水平台护栏风险",
+      "result": "自动生成 P1 事件并进入 SLA 计时"
+    },
+    {
+      "time": "10:05",
+      "actor": "运营组",
+      "event": "更新帐篷草坪区周末预约容量",
+      "result": "触发容量接近上限预警"
+    },
+    {
+      "time": "11:30",
+      "actor": "游客端",
+      "event": "新增房车营地区预约订单",
+      "result": "订单 o001 已支付并同步经营指标"
+    },
+    {
+      "time": "14:10",
+      "actor": "工程组",
+      "event": "提交中心塔架灯光巡检记录",
+      "result": "资产健康度维持 81%，建议继续观察"
+    }
+  ],
+  "capacitySignals": [
+    {
+      "zone": "rv",
+      "forecastLoad": 64,
+      "trend": "上升",
+      "recommendation": "作为帐篷区溢出承载区，推荐推送房车体验套餐。"
+    },
+    {
+      "zone": "tent",
+      "forecastLoad": 92,
+      "trend": "高峰",
+      "recommendation": "限制临时入场，新增错峰到达提示和夜间导视巡检。"
+    },
+    {
+      "zone": "waterfront",
+      "forecastLoad": 73,
+      "trend": "平稳",
+      "recommendation": "高峰时段安排志愿者引导，保持亲水侧单向游线。"
+    },
+    {
+      "zone": "tower",
+      "forecastLoad": 35,
+      "trend": "受限",
+      "recommendation": "维护完成前不承接大型活动，仅保留外围观景路线。"
+    }
+  ],
+  "forecast": {
+    "weekendVisitors": 1860,
+    "weekendRevenue": 58240,
+    "riskIndex": 38,
+    "staffNeeded": 14,
+    "peakWindow": "周六 16:00-20:00",
+    "summary": "周末客流将集中在帐篷草坪区和亲水平台区，需提前配置安全巡检、导视照明与分流运营。"
+  },
+  "serviceLevels": {
+    "p1Minutes": 240,
+    "p2Minutes": 720,
+    "p3Minutes": 1440,
+    "targetCloseRate": 90,
+    "owner": "营地运营指挥中心"
+  }
+}

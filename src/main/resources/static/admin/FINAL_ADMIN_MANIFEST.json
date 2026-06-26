@@ -1,0 +1,13 @@
+﻿{
+    "note":  "从 C:\\Users\\Windows\\Documents\\01\\dist 恢复，使用相对路径，可由 首页\\打开后台.bat 直接启动。",
+    "name":  "CampOS Bloom Admin Final Restored",
+    "files":  [
+                  "admin/index.html",
+                  "admin/assets/bloomAdmin-DJ6i0_H4.js",
+                  "admin/assets/bloomAdmin-BUhvVHef.css",
+                  "admin/assets/jsx-runtime-DdwvTla4.js"
+              ],
+    "generatedAt":  "2026-06-21 17:07:37",
+    "runUrl":  "http://127.0.0.1:8899/admin/index.html",
+    "entry":  "admin/index.html"
+}

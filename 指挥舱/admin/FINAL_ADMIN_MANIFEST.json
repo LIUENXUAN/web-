@@ -1,0 +1,12 @@
+﻿{
+    "files":  [
+                  "admin/index.html",
+                  "admin/assets/bloomAdmin.js",
+                  "admin/assets/bloomAdmin.css",
+                  "admin/assets/jsx-runtime.js"
+              ],
+    "generatedAt":  "2026-06-20 18:00:25",
+    "name":  "CampOS Bloom Admin Final",
+    "entry":  "admin/index.html",
+    "note":  "静态构建版本，可由项目根目录 node server.cjs 直接托管；不依赖本机临时目录。"
+}

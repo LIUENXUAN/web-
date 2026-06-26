@@ -1,0 +1,240 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1512" />
+  <title>林间律动营地｜运营指挥舱</title>
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="stylesheet" href="console.css?v=20260621b" />
+</head>
+<body>
+  <canvas id="particleField" aria-hidden="true"></canvas>
+  <canvas id="sparkField" aria-hidden="true"></canvas>
+  <div class="matrix-rain" aria-hidden="true"></div>
+  <div class="transition-veil" id="transitionVeil" aria-hidden="true"><span></span><strong>CampOS</strong></div>
+  <div class="soft-cursor" id="softCursor" aria-hidden="true"></div>
+  <div class="scroll-progress" aria-hidden="true"><i id="scrollProgress"></i></div>
+  <div class="shell">
+    <header class="topline rail app-nav reveal-panel" data-reveal="topline">
+      <span class="panel-wipe" aria-hidden="true"></span>
+      <div class="logo"><span>林</span><strong>CampOS</strong></div>
+      <nav>
+        <a class="active" href="#overview" data-section="overview">总览</a>
+        <a href="#command" data-section="command">事件指挥</a>
+        <a href="#twin" data-section="twin">数字孪生</a>
+        <a href="#orders" data-section="orders">预约订单</a>
+        <a href="#assets" data-section="assets">资产巡检</a>
+        <a href="#risk" data-section="risk">安全告警</a>
+        <a href="#timeline" data-section="timeline">审计时间线</a>
+        <a href="../admin/index.html">管理后台</a>
+      </nav>
+      <div class="app-nav-actions"><div class="toolbar"><button id="demoBtn">启动路演模式</button><button id="commandBtn">指挥菜单 Ctrl K</button><button id="refreshBtn">刷新数据</button><button id="exportBtn">导出运营日报</button></div><div class="status-strip">
+          <span class="dot"></span> API 正常
+          <span class="sep"></span> 模型 227 网格
+          <span class="sep"></span> LFS 资源已就绪
+        </div><button id="installBtn" hidden>安装为桌面软件</button></div>
+      <div class="topline-title">
+          <p>Smart Camp Operation System</p>
+          <h1>林间律动营地运营指挥舱</h1>
+        </div>
+    </header>
+<main class="workspace">
+<section class="hero-stage" id="mission">
+        <div class="image-shutters" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <img class="hero-cover" src="../assets/media/cover.jpg" alt="林间律动营地封面" />
+        <div class="hero-noise" aria-hidden="true"></div>
+        <div class="laser-flow" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="faulty-terminal" aria-hidden="true">CAMP_OS::SYNC 227 MESHES // RISK_SCAN // ASSET_HEALTH // SLA_CLOCK</div>
+        <div class="hero-orb" aria-hidden="true"><span></span><i></i><b></b></div>
+        <div class="hero-copy">
+          <p>QUIET LUXURY × DIGITAL TWIN</p>
+          <h2 class="sakazuki-title">Camp<br>Hidden<br>Gems</h2>
+          <span>不是把模型放到网页上，而是把一座营地变成可感知、可运营、可复盘的数字化体验。</span>
+        <div class="hero-meta">
+            <small>01 / 软件开发赛</small>
+            <small>227 Meshes</small>
+            <small>Node API + WebGL</small>
+            <small>Operational Twin</small>
+          </div>
+          <button class="hold-scan" id="holdScan" type="button"><span>按住扫描营地运营态势</span><i></i></button>
+        </div>
+        <div class="vertical-index" aria-hidden="true"><span>PHILOSOPHY</span><span>COLLECTIVE</span><span>BENEFITS</span><span>FOUNDER</span></div>
+        <div class="hero-hud">
+          <article><strong id="heroRisk">--</strong><span>风险指数</span></article>
+          <article><strong id="heroLoad">--</strong><span>峰值负载</span></article>
+          <article><strong id="heroSla">--</strong><span>SLA 目标</span></article>
+        </div>
+        <div class="scroll-oracle" aria-hidden="true"><span>SCROLL</span><i></i><em id="scrollOracle">00</em></div>
+        <div class="scanline" aria-hidden="true"></div>
+      </section>
+
+      <section class="case-strip" aria-label="项目亮点">
+        <article><span>01</span><strong>REAL MODEL</strong><em>完整营地模型 Web 化</em></article>
+        <article><span>02</span><strong>COMMAND</strong><em>事件指挥与 SLA 闭环</em></article>
+        <article><span>03</span><strong>DISPATCH</strong><em>容量预测与运营调度</em></article>
+        <article><span>04</span><strong>STORY</strong><em>路演模式自动叙事</em></article>
+      </section>
+
+      <section class="motion-marquee" aria-label="运营关键词">
+        <div><span>SAKE</span><span>CAMP</span><span>TWIN</span><span>RISK</span><span>ASSET</span><span>ORDER</span><span>SAKE</span><span>CAMP</span><span>TWIN</span><span>RISK</span><span>ASSET</span><span>ORDER</span></div>
+      </section>
+
+      <section class="philosophy-block" id="philosophy">
+        <div class="notch-card"><span>THE HEART OF CAMPOS</span><h2>Connection,<br>beyond model.</h2></div>
+        <p>模型只是入口。真正的系统价值，是把人、空间、资产、风险和经营决策连接起来，让营地从“看得见”变成“管得住”。</p>
+      </section>
+
+      <section class="ops-narrative" aria-label="杩愯惀闂幆鍙欎簨">
+        <div class="ops-narrative-copy">
+          <span>OPERATION LOOP</span>
+        <h2>从游客预约到现场安全，形成一条可演示的营地运营链。</h2>
+        <p>中间内容页重心不再是单张卡片展示，而是把指标、事件、调度、订单、资产和审计串成评委能听懂的系统证据。</p>
+        </div>
+        <div class="ops-loop" aria-hidden="true">
+        <i>预约</i><i>容量</i><i>事件</i><i>资产</i><i>审计</i>
+        </div>
+      </section>
+
+        <nav class="floating-dock" aria-label="快速演示导航">
+        <button data-jump="#mission">MISSION</button>
+        <button data-jump="#command">INCIDENT</button>
+        <button data-jump="#dispatch">DISPATCH</button>
+        <button data-jump="#twin">3D TWIN</button>
+        <button data-jump="#timeline">AUDIT</button>
+      </nav>
+
+      <section class="kpi-grid" id="kpis"></section>
+
+      <section class="layout" id="decision">
+        <article class="panel wide">
+          <div class="panel-head"><div><span>00</span><h2>智能决策建议</h2></div><em>基于当前运营数据自动生成</em></div>
+          <div class="decision-grid" id="decisionGrid"></div>
+        </article>
+      </section>
+
+      <section class="layout" id="overview">
+        <article class="panel wide">
+          <div class="panel-head"><div><span>01</span><h2>经营态势</h2></div><em>实时样例数据</em></div>
+          <div class="chart-row" id="businessChart"></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><span>02</span><h2>今日待办</h2></div></div>
+          <div class="task-list" id="taskList"></div>
+        </article>
+      </section>
+
+      <section class="layout command-layout" id="command">
+        <article class="panel wide command-panel">
+          <div class="panel-head"><div><span>03</span><h2>事件指挥与 SLA 调度</h2></div><em>分级、派单、闭环</em></div>
+          <div class="command-grid" id="incidentBoard"></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><span>04</span><h2>周末运营预测</h2></div></div>
+          <div class="forecast-card" id="forecastCard"></div>
+        </article>
+      </section>
+
+      <section class="layout" id="dispatch">
+        <article class="panel wide">
+          <div class="panel-head"><div><span>05</span><h2>容量调度与分流策略</h2></div><em>基于预约、区域状态与预测客流</em></div>
+          <div class="signal-grid" id="capacitySignals"></div>
+        </article>
+      </section>
+
+      <section class="layout" id="twin">
+        <article class="panel twin-panel">
+          <div class="panel-head"><div><span>06</span><h2>3D 数字孪生空间</h2></div><a href="../model-test.html" target="_blank">全屏查看</a></div>
+          <iframe src="../model-test.html" title="3D数字孪生模型"></iframe>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><span>07</span><h2>区域容量</h2></div></div>
+          <div class="filter-line"><button data-zone-filter="all" class="active">全部</button><button data-zone-filter="开放">开放</button><button data-zone-filter="维护中">维护</button><button data-zone-filter="关闭">关闭</button></div><div class="zone-stack" id="zoneStack"></div>
+        </article>
+      </section>
+
+      <section class="layout" id="orders">
+        <article class="panel wide commerce-panel">
+          <div class="panel-head"><div><span>08</span><h2>预约与订单</h2></div><a href="../app/index.html">游客端</a></div>
+          <div class="commerce-summary" id="commerceSummary"></div>
+          <div class="data-table" id="orderTable"></div>
+        </article>
+      </section>
+
+      <section class="layout" id="assets">
+        <article class="panel wide">
+          <div class="panel-head"><div><span>09</span><h2>资产健康与预测维护</h2></div><em>低健康度资产自动形成维护建议</em></div>
+          <div class="asset-board" id="assetBoard"></div>
+        </article>
+      </section>
+
+      <section class="layout" id="risk">
+        <article class="panel wide">
+          <div class="panel-head"><div><span>10</span><h2>安全告警闭环</h2></div><em>风险分级、责任人和处理状态同步展示</em></div>
+          <div class="risk-control-strip" id="riskControlStrip"></div>
+          <div class="sla-card" id="slaCard"></div><div class="risk-board" id="riskBoard"></div>
+        </article>
+      </section>
+
+      <section class="layout" id="timeline">
+        <article class="panel wide">
+          <div class="panel-head"><div><span>11</span><h2>运营审计时间线</h2></div><em>用于路演展示“系统可追溯、可复盘”</em></div>
+          <div class="timeline" id="auditTimeline"></div>
+        </article>
+      </section>
+
+      <section class="finale-wall finale-physics" id="finale" aria-label="CampOS 可拖拽物理终章">
+        <div class="finale-copy">
+          <span>END / DRAG THE SYSTEM</span>
+          <h2>CampOS</h2>
+          <p>拖动任意红色积木或文字块。它们有重量、碰撞、边界和堆叠，是一张可交互的物理海报。</p>
+        </div>
+        <div class="finale-menu" aria-label="终章导航">
+          <a href="#philosophy">PHILOSOPHY</a>
+          <a href="#command">COMMAND</a>
+          <a href="#twin">3D TWIN</a>
+          <a href="#timeline">AUDIT</a>
+          <button type="button" id="resetFinale">RESET BLOCKS</button>
+        </div>
+        <div class="finale-links" aria-label="项目链接">
+          <a href="../model-test.html" target="_blank">Full 3D</a>
+          <a href="../app/index.html">Visitor App</a>
+        </div>
+
+        <aside class="finale-team-panel" aria-label="团队分工">
+          <span>TEAM / RESPONSIBILITY</span>
+          <h3>三人协作面板</h3>
+          <article><b>刘恩轩</b><em>系统架构 / Node API / 数据模型</em><p>负责接口、数据结构与后台联动，让运营数据能被稳定调用和复盘。</p></article>
+          <article><b>韩帅强</b><em>3D 数字孪生 / WebGL / 模型集成</em><p>负责营地模型 Web 化、场景加载与交互热点，保证三维展示不卡顿。</p></article>
+          <article><b>徐鹏</b><em>运营指挥舱 / UI 动效 / 路演叙事</em><p>负责大屏信息层级、动画节奏与路演表达，把能力讲清楚。</p></article>
+        </aside>
+        <div class="physics-stage" id="physicsStage" aria-hidden="true"></div>
+        <div class="physics-hint" aria-hidden="true">DRAG TEAM BLOCKS</div>
+      </section>
+    </main>
+  </div>
+
+  <div class="command-palette" id="commandPalette" hidden>
+    <div class="palette-card" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
+      <div class="palette-head"><span id="paletteTitle">CampOS 指挥菜单</span><button id="closePalette" aria-label="关闭指挥菜单">×</button></div>
+      <div class="palette-list">
+        <button data-jump="#command">查看 P1/P2 事件指挥</button>
+        <button data-jump="#dispatch">查看容量调度策略</button>
+        <button data-jump="#twin">进入 3D 数字孪生</button>
+        <button data-jump="#risk">查看安全告警闭环</button>
+        <button data-action="export">导出今日运营日报</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../node_modules/gsap/dist/gsap.min.js"></script>
+  <script src="../node_modules/gsap/dist/SplitText.min.js"></script>
+  <script src="../node_modules/gsap/dist/ScrollTrigger.min.js"></script>
+  <script src="../node_modules/gsap/dist/ScrambleTextPlugin.min.js"></script>
+  <script src="../node_modules/lenis/dist/lenis.min.js"></script>
+  <script src="../node_modules/matter-js/build/matter.min.js"></script>
+  <script src="console.js?v=20260621b"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,13 @@
+﻿{
+  "name": "林间律动营地运营指挥舱",
+  "short_name": "CampOS",
+  "description": "营地数字孪生运营管理平台",
+  "start_url": "/console/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b1512",
+  "theme_color": "#0b1512",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "256x256", "type": "image/x-icon" }
+  ]
+}

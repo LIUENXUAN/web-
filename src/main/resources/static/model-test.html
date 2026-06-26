@@ -1,0 +1,31 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>营地真实 SKP 模型｜3D 数字孪生</title>
+  <style>
+    :root{--black:#050504;--paper:#e1d6ce;--red:#b9282c;--lime:#d8ef69;--muted:rgba(225,214,206,.68);--line:rgba(225,214,206,.18)}
+    *{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--black);font-family:Microsoft YaHei UI,Microsoft YaHei,system-ui,sans-serif;color:var(--paper)}
+    body:before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at 72% 12%,rgba(216,239,105,.12),transparent 28rem),radial-gradient(circle at 18% 78%,rgba(185,40,44,.22),transparent 30rem),linear-gradient(rgba(225,214,206,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(225,214,206,.04) 1px,transparent 1px);background-size:auto,auto,72px 72px,72px 72px;mix-blend-mode:screen}
+    #threeViewer{width:100vw;height:100vh;display:block;background:#020202;outline:none}.panel{position:fixed;left:18px;top:18px;z-index:2;width:min(455px,calc(100vw - 36px));color:var(--paper);background:rgba(5,5,4,.78);padding:16px 18px;border:1px solid var(--line);border-radius:0;backdrop-filter:blur(18px);box-shadow:10px 12px 0 rgba(0,0,0,.48)}
+    .panel:before{content:"CAMPOS / REAL SKP DIGITAL TWIN";display:block;margin-bottom:10px;color:var(--lime);font-size:11px;font-weight:950;letter-spacing:.2em}.panel strong{display:block;font-family:Georgia,"Times New Roman",serif;font-size:28px;letter-spacing:-.06em}.panel .hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.7}.buttons{position:fixed;right:18px;bottom:18px;display:flex;flex-wrap:wrap;justify-content:flex-end;max-width:min(820px,calc(100vw - 36px));gap:8px;z-index:2}button{border:1px solid rgba(225,214,206,.18);border-radius:0;padding:10px 13px;font-weight:900;cursor:pointer;color:var(--paper);background:rgba(5,5,4,.76);box-shadow:6px 7px 0 rgba(0,0,0,.44);transition:transform .18s ease,box-shadow .18s ease,background .18s ease}button:hover,button.is-active{transform:translate(-2px,-2px);box-shadow:9px 10px 0 rgba(0,0,0,.56);background:var(--lime);color:var(--black)}.model-progress{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:3;color:var(--black);background:var(--lime);padding:11px 16px;border:1px solid rgba(225,214,206,.22);border-radius:0;font-weight:950;box-shadow:8px 9px 0 rgba(0,0,0,.48);max-width:min(760px,calc(100vw - 36px));text-align:center}.model-progress.is-hidden{display:none}.model-stats{margin-top:8px;color:var(--muted);font-size:13px}.model-error{position:fixed;left:18px;right:18px;top:116px;display:none;color:var(--paper);background:rgba(185,40,44,.9);padding:14px;border:1px solid rgba(225,214,206,.2);border-radius:0;z-index:4;box-shadow:8px 9px 0 rgba(0,0,0,.48)}.model-error.is-visible{display:block}@media(max-width:720px){.buttons{left:18px;right:18px;justify-content:flex-start}.panel strong{font-size:22px}}
+  </style>
+  <link rel="stylesheet" href="assets/campos-motion.css" />
+</head>
+<body>
+  <canvas id="threeViewer"></canvas>
+  <div class="panel">
+    <strong>营地真实 SKP 模型</strong>
+    <div class="hint">真实 SketchUp 模型在线展示。鼠标旋转 / 滚轮缩放 / 右键平移，WASD 平面移动视角，Q/E 升降视角。若高清模型加载慢，会自动切换极速轻量版。</div>
+    <div class="model-stats"></div>
+  </div>
+  <div class="model-error"></div>
+  <div class="model-progress"><span>真实模型加载中...</span></div>
+  <div class="buttons">
+    <button data-view="overview">总览</button><button data-view="bird">鸟瞰</button><button data-view="front">正视</button><button data-view="top">俯视</button><button data-view="low">低角度</button><button data-render="material">原材质</button><button data-render="enhanced">增强渲染</button><button data-render="clay">陶土</button><button data-load="lite">极速轻量版</button><button data-load="web">高清网页版</button><button data-load="full">完整模型</button><button data-crop="core">聚焦核心</button><button data-crop="all">全景完整</button>
+  </div>
+  <script type="module" src="viewer.js?v=2026-06-19-reliable-loader"></script>
+  <script src="assets/campos-motion.js" defer></script>
+</body>
+</html>
