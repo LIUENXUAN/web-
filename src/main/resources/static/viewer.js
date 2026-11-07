@@ -17,6 +17,161 @@ const modelFiles = {
   full: { url: 'assets/model/camp-real.glb', label: '完整真实模型', size: '547MB' }
 };
 
+// ===== 3D 数据联动：区域坐标映射 =====
+var ZONE_POSITIONS = {
+  z1:  { x: -8,  y: 0.5, z: 6,   label: '湖畔豪华帐篷' },
+  z2:  { x: 0,   y: 0.5, z: 14,  label: '森林木屋套房' },
+  z3:  { x: 8,   y: 0.5, z: 6,   label: '至尊野奢帐篷' },
+  z4:  { x: 0,   y: 0.5, z: -8,  label: '豪华房车别墅' }
+};
+
+var campData = null;
+var zoneMarkers = [];
+var selectedZoneId = null;
+var raycaster = new THREE.Raycaster();
+var pointer = new THREE.Vector2();
+
+function fetchCampData() {
+  return fetch('/api/public', { credentials: 'include' })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      campData = d;
+      return d;
+    })
+    .catch(function() {
+      // 静默降级，不阻塞模型展示
+      return null;
+    });
+}
+
+function getZoneStatusColor(status) {
+  if (status === '开放' || status === '可预订') return '#6bcf8a';
+  if (status === '维护中' || status === '维修中') return '#f0c040';
+  if (status === '关闭') return '#e87060';
+  return '#6bcf8a';
+}
+
+function createZoneMarkerSprite(zoneId, zoneInfo, status) {
+  var color = getZoneStatusColor(status);
+  var canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 128;
+  var ctx = canvas.getContext('2d');
+
+  // 圆形标记
+  var cx = 40, cy = 64;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 20, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // 标签文字
+  ctx.font = 'bold 32px "Microsoft YaHei", sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(0,0,0,0.8)';
+  ctx.shadowBlur = 8;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(zoneInfo.label, 68, 60);
+
+  // 状态文字
+  ctx.font = '22px "Microsoft YaHei", sans-serif';
+  ctx.shadowBlur = 6;
+  ctx.fillStyle = color;
+  ctx.fillText(status || '未知', 68, 96);
+
+  var texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  var material = new THREE.SpriteMaterial({
+    map: texture,
+    transparent: true,
+    depthTest: true,
+    depthWrite: false,
+    sizeAttenuation: true
+  });
+  var sprite = new THREE.Sprite(material);
+  sprite.position.set(zoneInfo.x, zoneInfo.y, zoneInfo.z);
+  sprite.scale.set(18, 9, 1);
+  sprite.userData.zoneId = zoneId;
+  return sprite;
+}
+
+function renderZoneMarkers() {
+  // 清除旧标记
+  zoneMarkers.forEach(function(s) { scene.remove(s); });
+  zoneMarkers = [];
+
+  if (!campData || !campData.data || !campData.data.zones) return;
+  var zones = campData.data.zones;
+  zones.forEach(function(zone) {
+    var pos = ZONE_POSITIONS[zone.id];
+    if (!pos) return;
+    var sprite = createZoneMarkerSprite(zone.id, pos, zone.status);
+    scene.add(sprite);
+    zoneMarkers.push(sprite);
+  });
+}
+
+function showZoneInfo(zoneId) {
+  if (!campData || !campData.data) return;
+  var zones = campData.data.zones;
+  var zone = null;
+  for (var i = 0; i < zones.length; i++) {
+    if (zones[i].id === zoneId) { zone = zones[i]; break; }
+  }
+  if (!zone) return;
+  selectedZoneId = zoneId;
+
+  var infoEl = document.querySelector('.zone-info');
+  if (!infoEl) return;
+  var pos = ZONE_POSITIONS[zoneId];
+  infoEl.innerHTML =
+    '<div class="zone-info-close" id="zoneInfoClose">✕</div>' +
+    '<div class="zone-info-name">' + (pos ? pos.label : zone.name) + '</div>' +
+    '<div class="zone-info-status" style="color:' + getZoneStatusColor(zone.status) + '">' + zone.status + '</div>' +
+    '<div class="zone-info-detail">' +
+      '<span>类型：' + (zone.type || '-') + '</span>' +
+      '<span>价格：¥' + (zone.price || 0) + '</span>' +
+      '<span>容量：' + (zone.capacity || 0) + '人</span>' +
+    '</div>' +
+    '<div class="zone-info-desc">' + (zone.description || '暂无描述') + '</div>';
+  infoEl.classList.add('is-visible');
+
+  // 高亮对应的标记
+  zoneMarkers.forEach(function(s) {
+    if (s.userData.zoneId === zoneId) {
+      s.scale.set(24, 12, 1);
+    } else {
+      s.material.opacity = 0.35;
+    }
+  });
+}
+
+function hideZoneInfo() {
+  selectedZoneId = null;
+  var infoEl = document.querySelector('.zone-info');
+  if (infoEl) infoEl.classList.remove('is-visible');
+  zoneMarkers.forEach(function(s) {
+    s.scale.set(18, 9, 1);
+    s.material.opacity = 1;
+  });
+}
+
+function refreshZoneData() {
+  fetchCampData().then(function() {
+    renderZoneMarkers();
+    if (selectedZoneId) showZoneInfo(selectedZoneId);
+    var btn = document.querySelector('#refreshDataBtn');
+    if (btn) {
+      btn.textContent = '✓ 已刷新';
+      setTimeout(function() { btn.textContent = '刷新数据'; }, 2000);
+    }
+  });
+}
+
 if (!canvas) throw new Error('未找到 threeViewer 画布');
 canvas.tabIndex = 0;
 
@@ -478,6 +633,21 @@ document.querySelectorAll('[data-crop]').forEach((button) => {
   });
 });
 
+canvas.addEventListener('click', function(event) {
+  var rect = canvas.getBoundingClientRect();
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  var intersects = raycaster.intersectObjects(zoneMarkers);
+  if (intersects.length > 0) {
+    var hit = intersects[0].object;
+    if (hit.userData.zoneId) {
+      showZoneInfo(hit.userData.zoneId);
+      return;
+    }
+  }
+  hideZoneInfo();
+});
 canvas.addEventListener('click', () => canvas.focus());
 window.addEventListener('keydown', (event) => {
   const code = normalizeCameraKey(event);
@@ -521,6 +691,20 @@ window.__camp3d = {
   frameView
 };
 
+// 刷新数据按钮
+document.addEventListener('click', function(e) {
+  if (e.target.id === 'refreshDataBtn') {
+    refreshZoneData();
+  }
+  if (e.target.id === 'zoneInfoClose') {
+    hideZoneInfo();
+  }
+});
+
 loadModel('web');
+// 模型加载后获取营地数据并渲染标记
+setTimeout(function() {
+  fetchCampData().then(function() { renderZoneMarkers(); });
+}, 1000);
 animate();
 

@@ -1,7 +1,7 @@
-﻿# 营地公园全栈管理系统 — 项目上下文文档
+# 营地公园全栈管理系统 — 项目上下文文档
 
 > 本文件记录项目完整架构、当前状态、待办事项，用于新对话快速恢复上下文。
-> 最后更新：2026-06-26
+> 最后更新：2026-06-28 (v12)
 
 ---
 
@@ -11,7 +11,7 @@
 |------|------|
 | 项目名 | 营地公园全栈管理系统 (CampOS) |
 | 后端 | Spring Boot 3.3.2 + Java 21 + Maven |
-| 前端 | React SPA (bloomAdmin) + 5个独立静态页面 |
+| 前端 | React SPA (admin-spa.js) + Bridge v10 DOM 补丁 + 5个独立静态页面 |
 | 数据库 | MySQL (fullstack_dev) + JPA/Hibernate |
 | 认证 | Spring Security + Session + JSON Login Filter |
 | 构建 | Maven → JAR (camp-system-1.0.0.jar) |
@@ -35,42 +35,40 @@ D:\营地 3D大赛\website（最终版）\
 │   │   ├── GlobalExceptionHandler.java   # 全局异常处理
 │   │   └── CampConstants.java            # 常量
 │   ├── controller/
-│   │   ├── AdminController.java          # 后台 API (/api/admin)
-│   │   ├── PublicController.java         # 前台 API (/api/public, /api/bookings, /api/feedback)
+│   │   ├── AdminController.java          # 后台聚合 API (/api/admin)
+│   │   ├── ZoneController.java           # 营地区域 CRUD (/api/admin/zones)
+│   │   ├── BookingController.java        # 预订 CRUD + 筛选 (/api/admin/bookings)
+│   │   ├── ActivityController.java       # 活动 CRUD (/api/admin/activities)
+│   │   ├── FeedbackController.java       # 反馈管理 (/api/admin/feedback)
+│   │   ├── AssetController.java          # 资产 CRUD (/api/admin/assets)
+│   │   ├── InspectionController.java     # 巡检 CRUD (/api/admin/inspections)
+│   │   ├── AlertController.java          # 告警 CRUD (/api/admin/alerts)
+│   │   ├── UserController.java           # 用户管理 (/api/admin/users)
+│   │   ├── LogController.java            # 操作日志 (/api/admin/logs)
+│   │   ├── PublicController.java         # 前台公开 API
 │   │   └── PageController.java           # 页面路由
 │   ├── domain/                           # JPA 实体 (9张表)
-│   │   ├── UserAccount.java              # users 表
-│   │   ├── Zone.java                     # zones 营地区域
-│   │   ├── Booking.java                  # bookings 预订
-│   │   ├── Activity.java                 # activities 活动
-│   │   ├── Feedback.java                 # feedback 反馈
-│   │   ├── CampAsset.java                # camp_assets 资产
-│   │   ├── Inspection.java               # inspections 巡检
-│   │   ├── Alert.java                    # alerts 告警
-│   │   └── OperationLog.java             # operation_logs 操作日志
-│   ├── dto/                              # 请求/响应 DTO
+│   ├── dto/                              # 请求/响应 DTO (11个)
 │   ├── repository/                       # JPA Repository
 │   └── service/                          # 业务逻辑
 ├── src/main/resources/
 │   ├── application.yml                   # 数据库/安全配置
 │   └── static/                           # 静态文件
-│       ├── index.html                    # 首页入口
-│       ├── bloom-admin.html              # 后台入口 (Spring Boot 版)
-│       ├── admin/index.html              # 后台入口 (含 bridge 脚本)
-│       ├── admin/assets/
-│       │   ├── bloomAdmin-DJ6i0_H4.js    # React SPA (25KB, 18个组件)
-│       │   ├── bloom-admin-bridge.js     # API Bridge (当前 v7)
-│       │   └── ...
-│       ├── assets/model/                 # 3D 模型
-│       ├── assets/media/                 # 视频
-│       └── vendor/                       # Three.js 等第三方库
 ├── 后台/                                 # 独立后台服务
 │   ├── start-admin.cjs                   # Node.js 静态服务器 + API 代理
 │   ├── admin/index.html                  # 独立版后台入口
-│   └── admin/assets/                     # 独立版静态文件
+│   └── admin/assets/
+│       ├── bloomAdmin-DJ6i0_H4.js        # React SPA (25KB, 18个组件)
+│       ├── bloom-admin-bridge.js         # API Bridge v10 (102KB, 9模块完整CRUD)
+│       ├── bloomAdmin-BUhvVHef.css       # SPA 样式
+│       └── jsx-runtime-DdwvTla4.js       # JSX 运行时
+├── admin-spa.html                          # 商用 SPA Part 1 (HTML 入口)
+├── admin-spa.js                            # 商用 SPA Part 1 (React 组件, 488行)
 ├── 首页/ 前台/ 指挥舱/ 模型/ 作者页/       # 独立前端页面
 ├── target/camp-system-1.0.0.jar          # 可执行 JAR
 ├── pom.xml                               # Maven 构建
+├── AGENTS.md                             # 开发指引
+├── PROJECT_CONTEXT.md                    # 项目上下文
 └── start-five-pages.cjs                  # 5页面独立启动器
 ```
 
@@ -90,6 +88,8 @@ D:\营地 3D大赛\website（最终版）\
 | password_hash | VARCHAR | BCrypt 加密 |
 | role | VARCHAR | ADMIN |
 | status | VARCHAR | ACTIVE |
+| display_name | VARCHAR | 显示名称 |
+| email | VARCHAR | 邮箱 |
 
 **zones** — 营地区域 (10条演示数据)
 | 字段 | 类型 | 说明 |
@@ -98,7 +98,7 @@ D:\营地 3D大赛\website（最终版）\
 | name | VARCHAR | 星空营地, 森林木屋... |
 | type | VARCHAR | 帐篷/木屋/房车/公共 |
 | capacity | INT | 容量 |
-| status | VARCHAR | 开放/维护中 |
+| status | VARCHAR | 开放/维护中/可预订 |
 | price | DECIMAL | 价格 |
 | description | VARCHAR(1000) | 描述 |
 | image_url | VARCHAR | 图片URL |
@@ -107,120 +107,192 @@ D:\营地 3D大赛\website（最终版）\
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | id | VARCHAR PK | b1-b5 |
-| name | VARCHAR | 客户名 |
+| name | VARCHAR | 姓名 |
 | phone | VARCHAR | 手机号 |
-| zone | VARCHAR | 营地区域 |
+| zone | VARCHAR | 营地名称 |
 | date | DATE | 入住日期 |
 | people | INT | 人数 |
-| status | VARCHAR | 待确认/已确认/已取消 |
+| status | VARCHAR | 待确认/已确认/已完成/已取消 |
 | remark | VARCHAR(500) | 备注 |
 | created_at | DATETIME | 创建时间 |
 
-**activities** — 活动 (5条)
-**feedback** — 反馈 (3条)
-**camp_assets** — 资产 (3条)
-**inspections** — 巡检 (3条)
-**alerts** — 告警 (2条)
-**operation_logs** — 操作日志 (自动记录)
+**activities** — 活动 (3条演示数据)
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | VARCHAR PK | a1-a3 |
+| title | VARCHAR | 活动标题 |
+| date | DATE | 活动日期 |
+| zone | VARCHAR | 所属区域 |
+| quota | INT | 名额上限 |
+| joined | INT | 已报名数 |
+| status | VARCHAR | 报名中/已满员/已结束 |
+| description | VARCHAR(2000) | 描述 |
+
+**feedback** — 反馈 (3条演示数据)
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | VARCHAR PK | f1-f3 |
+| name | VARCHAR | 游客名 |
+| content | VARCHAR(1000) | 反馈内容 |
+| status | VARCHAR | 待处理/已处理 |
+| created_at | DATETIME | 创建时间 |
+
+**camp_assets** — 资产 (5条演示数据)
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | VARCHAR PK | ca1-ca5 |
+| name | VARCHAR | 资产名称 |
+| zone | VARCHAR | 所属区域 |
+| type | VARCHAR | 类型 |
+| status | VARCHAR | 正常/维护中/故障 |
+| priority | VARCHAR | 优先级 |
+| health | INT | 健康度(0-100) |
+| owner | VARCHAR | 负责人 |
+| last_check | DATE | 最后检查日 |
+
+**inspections** — 巡检 (3条演示数据)
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | VARCHAR PK | i1-i3 |
+| title | VARCHAR | 巡检标题 |
+| zone | VARCHAR | 区域 |
+| owner | VARCHAR | 负责人 |
+| frequency | VARCHAR | 频率 |
+| due_date | DATE | 截止日期 |
+| status | VARCHAR | 待执行/进行中/已完成 |
+| result | VARCHAR(1000) | 结果 |
+
+**alerts** — 告警 (3条演示数据)
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | VARCHAR PK | al1-al3 |
+| title | VARCHAR | 告警标题 |
+| zone | VARCHAR | 区域 |
+| level | VARCHAR | 级别 |
+| type | VARCHAR | 类型 |
+| status | VARCHAR | 待处理/处理中/已关闭 |
+| owner | VARCHAR | 负责人 |
+| created_at | DATETIME | 创建时间 |
+
+**operation_logs** — 操作日志
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | BIGINT PK AUTO | 自增 |
+| operator | VARCHAR | 操作人 |
+| action | VARCHAR | 操作动作 |
+| entity_type | VARCHAR | 操作对象类型 |
+| entity_id | VARCHAR | 操作对象ID |
+| detail | VARCHAR | 详情 |
+| created_at | DATETIME | 操作时间 |
 
 ---
 
-## 四、API 接口
+## 四、后端 API 一览
 
 ### 4.1 公开接口 (无需登录)
+
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | /api/login | JSON 登录 {username, password} |
+| POST | /api/login | JSON 登录 |
 | POST | /api/logout | 登出 |
-| GET | /api/public | 前台数据 (营地+活动+统计) |
-| POST | /api/bookings | 创建预订 |
-| POST | /api/feedback | 提交反馈 |
+| GET | /api/public | 前台首页数据 |
+| POST | /api/bookings | 前台提交预订 |
+| POST | /api/feedback | 前台提交反馈 |
 
-### 4.2 管理接口 (需登录)
+### 4.2 后台接口 (需登录)
+
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| GET | /api/admin | 获取全部管理数据 |
-| PUT | /api/admin/bookings/{id} | 更新预订状态 |
-| PUT | /api/admin/feedback/{id} | 更新反馈状态 |
-| DELETE | /api/admin/feedback/{id} | 删除反馈 |
-| PUT | /api/admin/zones/{id} | 更新营地状态 |
-| PUT | /api/admin/activities/{id} | 更新活动状态 |
-| PUT | /api/admin/assets/{id} | 更新资产状态 |
-| PUT | /api/admin/inspections/{id} | 更新巡检状态 |
-| PUT | /api/admin/alerts/{id} | 更新告警状态 |
-
-### 4.3 登录凭据
-- 用户名: admin
-- 密码: camp2026
-
----
-
-## 五、前端 SPA 架构
-
-### 5.1 SPA 文件
-`bloomAdmin-DJ6i0_H4.js` (25KB, 已混淆/压缩)
-
-### 5.2 组件列表
-| 函数 | 页面 | 说明 |
-|------|------|------|
-| re | App 根组件 | 管理登录状态 e, 切换登录/后台 |
-| ne | LoginPage | 登录表单, 动画角色, onSuccess 回调 |
-| H | Dashboard | 统计卡片 + 功能入口 |
-| W | Orders | 订单管理 (表格) |
-| G | Products | 套餐产品 |
-| K | Resources | 资源管理 |
-| q | Customers | 客户会员 |
-| J | Activities | 活动课程 |
-| Y | Finance | 财务管理 |
-| X | Staff | 员工权限 |
-| Z | Content | 内容管理 |
-| Q | Settings | 系统设置 |
-| B | Table | 通用表格组件 |
-| V | Toolbar | 通用工具栏 |
-| $ | Drawer | 详情抽屉 |
-| ee | Calendar | 资源日历 |
-| te | TabRouter | 标签页路由 |
-
-### 5.3 数据流
-```
-SPA 硬编码数据 → Bridge v7 (DOM 补丁) → API → MySQL
-```
-
-**Bridge v7 功能**:
-- 登录拦截: 调 /api/login → 成功后触发 React onSuccess
-- 会话检测: 页面加载时检查 /api/admin → 已登录自动进后台
-- 仪表盘: 每15秒轮询 /api/admin, 更新统计卡片/功能入口/告警卡片
-- 表格数据: 根据当前可见页面, 替换表格 DOM 为真实数据
-- 订单点击: 点击订单行 → PUT /api/admin/bookings/{id} 切换状态
-
-### 5.4 当前局限 (Bridge 方案)
-- DOM 补丁脆弱, React 重新渲染会覆盖
-- 按钮(筛选/搜索/导出/新增) 无实际功能
-- 无分页/加载状态/错误提示
-- 无表单提交(新增/编辑)
+| GET | /api/admin | 聚合数据(metrics+zones+bookings+activities+feedback+assets+inspections+alerts+logs) |
+| | | |
+| GET | /api/admin/zones | 分页列表 |
+| POST | /api/admin/zones | 新增 |
+| PUT | /api/admin/zones/{id} | 编辑 |
+| PUT | /api/admin/zones/{id}/status | 更新状态 |
+| DELETE | /api/admin/zones/{id} | 删除 |
+| | | |
+| GET | /api/admin/bookings?keyword=&status=&page=&size= | 分页+关键词+状态筛选 |
+| PUT | /api/admin/bookings/{id}/status | 更新状态 |
+| DELETE | /api/admin/bookings/{id} | 删除 |
+| | | |
+| GET | /api/admin/activities | 分页列表 |
+| POST | /api/admin/activities | 新增 |
+| PUT | /api/admin/activities/{id} | 编辑 |
+| PUT | /api/admin/activities/{id}/status | 更新状态 |
+| DELETE | /api/admin/activities/{id} | 删除 |
+| | | |
+| GET | /api/admin/feedback | 分页列表 |
+| PUT | /api/admin/feedback/{id}/status | 更新状态 |
+| DELETE | /api/admin/feedback/{id} | 删除 |
+| | | |
+| GET | /api/admin/assets | 分页列表 |
+| POST | /api/admin/assets | 新增 |
+| PUT | /api/admin/assets/{id} | 编辑 |
+| PUT | /api/admin/assets/{id}/status | 更新状态 |
+| DELETE | /api/admin/assets/{id} | 删除 |
+| | | |
+| GET | /api/admin/inspections | 分页列表 |
+| POST | /api/admin/inspections | 新增 |
+| PUT | /api/admin/inspections/{id} | 编辑 |
+| PUT | /api/admin/inspections/{id}/status | 更新状态 |
+| DELETE | /api/admin/inspections/{id} | 删除 |
+| | | |
+| GET | /api/admin/alerts | 分页列表 |
+| POST | /api/admin/alerts | 新增 |
+| PUT | /api/admin/alerts/{id} | 编辑 |
+| PUT | /api/admin/alerts/{id}/status | 更新状态 |
+| DELETE | /api/admin/alerts/{id} | 删除 |
+| | | |
+| GET | /api/admin/users | 分页列表 |
+| POST | /api/admin/users | 新增 |
+| PUT | /api/admin/users/{id} | 编辑 |
+| DELETE | /api/admin/users/{id} | 删除 |
+| | | |
+| GET | /api/admin/logs | 分页列表 |
 
 ---
 
-## 六、当前运行方式
+## 五、Bridge v9 架构
 
-### 方式 A: Spring Boot JAR (端口 8080)
-```
-java -jar target/camp-system-1.0.0.jar
-→ http://localhost:8080/admin/index.html (bridge v5, 旧版)
-```
+### 5.1 工作原理
+React SPA (bloomAdmin-DJ6i0_H4.js) 渲染精美 UI 框架（视频背景、毛玻璃面板、导航菜单），
+Bridge v9 (bloom-admin-bridge.js) 在 DOM 层面注入真实数据。
 
-### 方式 B: 独立后台服务器 (端口 19098)
-```
-node 后台/start-admin.cjs
-→ http://127.0.0.1:19098/admin/index.html (bridge v7, 最新)
-```
-独立服务器代理 /api/* 到 localhost:8080
+### 5.2 页面映射
+| SPA 导航 | Bridge 处理函数 | 数据来源 |
+|----------|----------------|----------|
+| 首页仪表盘 | patchDashboard() | /api/admin 聚合数据 |
+| 订单管理 | patchOrdersPage() | /api/admin/bookings (分页+筛选) |
+| 产品套餐 | patchProductsPage() | state.zones |
+| 资源场地 | patchResourcesPage() | state.assets |
+| 客户会员 | patchCustomersPage() | state.feedback |
+| 活动课程 | patchActivitiesPage() | state.activities |
+| 财务管理 | patchFinancePage() | state.metrics |
+| 员工权限 | patchStaffPage() | 静态数据 |
+| 内容管理 | patchContentPage() | 静态数据 |
 
-### 方式 C: 5页面独立启动
-```
-node start-five-pages.cjs
-→ 首页:19101, 前台:19102, 后台:19098, 指挥舱:19103, 模型:19104
-```
+### 5.3 订单 CRUD 功能
+- 关键词搜索（姓名/手机号/订单号）
+- 状态筛选（全部/待确认/已确认/已完成/已取消）
+- 分页导航
+- 状态操作：确认/完成/取消（调用 PUT /api/admin/bookings/{id}/status）
+- 详情抽屉（毛玻璃右侧面板）
+- 操作日志自动记录
+
+---
+
+## 六、演示数据
+
+| 表 | 数量 | 说明 |
+|----|------|------|
+| users | 1 | admin / camp2026 |
+| zones | 10 | 星空营地、森林木屋、湖畔帐篷... |
+| bookings | 5 | 张三、李四... |
+| activities | 3 | 篝火晚会、自然徒步... |
+| feedback | 3 | 游客评价 |
+| camp_assets | 5 | 帐篷、发电机... |
+| inspections | 3 | 设备检查... |
+| alerts | 3 | 告警信息 |
 
 ---
 
@@ -236,78 +308,73 @@ node start-five-pages.cjs
 
 ## 八、商用化改造路线图
 
-### 阶段一: 后端 API 补齐 (2-3天)
+### 阶段一: 后端 API 补齐 ✅ (基本完成)
 
 #### 1.1 CRUD 接口补齐
-- [ ] ZoneController: POST(新增), PUT(编辑), DELETE(删除), GET(分页列表)
-- [ ] BookingController: POST(新增), PUT(编辑), DELETE(取消), GET(分页+筛选)
-- [ ] ActivityController: POST, PUT, DELETE, GET(分页)
-- [ ] FeedbackController: PUT(回复), DELETE, GET(分页)
-- [ ] AssetController: POST, PUT, DELETE, GET(分页)
-- [ ] InspectionController: POST, PUT, DELETE, GET(分页)
-- [ ] AlertController: POST, PUT, DELETE, GET(分页)
-- [ ] OperationLogController: GET(分页+筛选)
+- [x] ZoneController: POST(新增), PUT(编辑), DELETE(删除), GET(分页列表)
+- [x] BookingController: POST(新增), PUT(编辑), DELETE(取消), GET(分页+筛选)
+- [x] ActivityController: POST, PUT, DELETE, GET(分页)
+- [x] FeedbackController: PUT(回复), DELETE, GET(分页)
+- [x] AssetController: POST, PUT, DELETE, GET(分页)
+- [x] InspectionController: POST, PUT, DELETE, GET(分页)
+- [x] AlertController: POST, PUT, DELETE, GET(分页)
+- [x] OperationLogController: GET(分页+筛选)
 
 #### 1.2 增强功能
-- [ ] 分页查询 (Pageable + 排序)
-- [ ] 多条件筛选 (状态/日期/关键词)
-- [ ] 数据校验 (Validation)
+- [x] 分页查询 (Pageable + 排序)
+- [x] 多条件筛选 (Booking: 关键词+状态)
+- [x] 数据校验 (Validation)
 - [ ] 批量操作 (批量确认/删除)
 - [ ] Excel 导出 (已有 poi-ooxml 依赖)
-- [ ] 操作日志记录 (已有 OperationLog)
+- [x] 操作日志记录 (已有 OperationLog)
 
 #### 1.3 权限系统
 - [ ] 角色: SUPER_ADMIN, ADMIN, OPERATOR, FINANCE, STAFF
 - [ ] 权限注解 @PreAuthorize
-- [ ] 用户管理 API (CRUD 管理员账号)
+- [x] 用户管理 API (CRUD 管理员账号)
 - [ ] 菜单权限控制
 
-### 阶段二: 重写后台 SPA (5-7天)
+### 阶段二: 重写后台 SPA ✅ (Bridge v9 方案)
 
 #### 2.1 技术选型
-- [ ] 用 Vite + React 重新构建
-- [ ] 使用 React Router 做路由
-- [ ] 使用 Ant Design 或 shadcn/ui 组件库
-- [ ] 使用 Zustand 或 React Query 管理状态
+- [x] 保留现有 React SPA 精美设计
+- [x] Bridge v9 脚本在 DOM 层注入数据
+- [x] 使用现有 CSS 组件库
 
 #### 2.2 模块开发
-- [ ] 登录页 (复用现有 UI 设计)
-- [ ] 仪表盘 (真实 KPI 图表, ECharts/Recharts)
-- [ ] 订单管理 (表格+筛选+分页+详情抽屉+状态操作)
-- [ ] 营地区域 (CRUD 表单+状态管理)
-- [ ] 活动课程 (CRUD+报名管理)
-- [ ] 游客反馈 (列表+回复+删除)
-- [ ] 资产管理 (CRUD+健康度)
-- [ ] 巡检管理 (CRUD+执行)
-- [ ] 告警管理 (列表+处理)
-- [ ] 操作日志 (只读列表+筛选)
-- [ ] 用户管理 (CRUD 管理员)
+- [x] 登录页 (复用现有 UI 设计)
+- [x] 仪表盘 (真实 KPI 数据)
+- [x] 订单管理 (表格+筛选+分页+详情抽屉+状态操作)
+- [x] 营地区域 (列表展示 + CRUD弹窗 + 状态切换 + 分页)
+- [x] 活动课程 (列表展示 + CRUD弹窗 + 状态切换 + 分页)
+- [x] 游客反馈 (列表展示 + 详情弹窗 + 标记处理 + 分页)
+- [x] 资产管理 (列表展示+健康度+CRUD弹窗+状态切换+分页)
+- [x] 巡检管理 (列表展示+CRUD弹窗+状态切换+分页)
+- [x] 告警管理 (列表展示+处理弹窗+关闭/分配负责人+分页)
+- [x] 操作日志 (已接入数据)
+- [x] 用户管理 (列表展示+CRUD弹窗+分页)
 - [ ] 系统设置 (营地信息/支付/通知配置)
 
-#### 2.3 通用组件
-- [ ] 分页表格 (排序/筛选/批量操作)
-- [ ] 表单弹窗 (新增/编辑)
-- [ ] 状态标签 (颜色映射)
-- [ ] 搜索框 (防抖)
-- [ ] 日期选择器
-- [ ] 导出按钮
-- [ ] 加载骨架屏
-- [ ] 错误边界
-- [ ] 空状态提示
 
-### 阶段三: 前台页面对接 (2-3天)
+#### 2.4 商用 SPA v2 (admin-spa.html) ✅ 最终版
+- [x] 登录页 (复用现有 UI 设计)
+- [x] 仪表盘 (真实 KPI + 待办事项 + 最近订单)
+- [x] 订单管理 (搜索/筛选/分页/状态操作/详情抽屉)
+- [x] 营地区域 (表格 + CRUD 弹窗 + 状态切换 + 分页)
+- [x] 活动课程 (表格 + CRUD 弹窗 + 三态切换 + 分页)
+- [x] 游客反馈 (表格 + 详情弹窗 + 标记处理 + 分页)
+- [x] 资产管理 (表格 + CRUD 弹窗 + 健康度滑块 + 状态切换 + 分页)
+- [x] 巡检管理 (表格 + CRUD 弹窗 + 执行巡检 + 分页)
+- [x] 告警管理 (表格 + 处理弹窗 + 关闭/分配负责人 + 分页)
+- [x] 用户管理 (表格 + CRUD 弹窗 + 角色/状态 + 分页)
 
-#### 3.1 前台预订流程
-- [ ] 营地列表页 (从 API 读取)
-- [ ] 营地详情页 (图片/价格/描述)
-- [ ] 预订表单 (日期选择/人数/套餐)
-- [ ] 预订成功页
-- [ ] 我的订单查询
-
-#### 3.2 前台功能
-- [ ] 活动展示
-- [ ] 反馈提交
-- [ ] 公告展示
+技术: React 18 + React Router 6 (CDN), 原生 React.createElement, 88KB, 零构建
+- 背景: CDN 绿色地球旋转视频
+- 主题: 森系深绿配色（Inter 字体、高对比度）
+- 弹窗: overlay 包裹结构 + stopPropagation
+- [x] 公告展示
+- [x] UI 美化（Inter 字体、森系配色、毛玻璃修复）
+- [x] 弹窗交互修复（stopPropagation）
 - [ ] FAQ
 
 ### 阶段四: 部署与运维 (1-2天)
@@ -342,8 +409,9 @@ node start-five-pages.cjs
 1. **Steam++ (Watt Toolkit)** 修改 hosts 劫持 GitHub 域名
    - 症状: git push HTTPS 连到 127.0.0.1:443
    - 绕过: GIT_SSL_NO_VERIFY=1 或 gh api
-2. **JAR 静态文件旧版** — 没装 Maven 无法重新打包
+2. **JAR 静态文件旧版** — 需重新打包才能更新 JAR 内的静态文件
    - 解决: 用独立服务器 (端口 19098) 开发调试
+   - 打包: `$env:JAVA_HOME="C:\Program Files\Java\jdk-21"; .\mvnw.cmd package -DskipTests`
 3. **中文编码** — 部分 Java 文件含中文硬编码, 编译后乱码
 4. **演示数据硬编码** — CampDemoDataSeeder 用中文做状态值
 5. **无单元测试** — 只有骨架测试类
@@ -355,15 +423,17 @@ node start-five-pages.cjs
 
 ```bash
 # 1. 启动 MySQL (确保 3306 端口运行)
-# 2. 启动后端
+
+# 2. 启动后端 (需 JDK 21)
 cd D:\营地 3D大赛\website（最终版）
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-21"
 java -jar target/camp-system-1.0.0.jar
 
 # 3. 启动独立后台 (开发用)
 node 后台/start-admin.cjs
 
 # 4. 访问
-http://127.0.0.1:19098/admin/index.html
+http://127.0.0.1:19098/后台/admin/admin-spa.html
 # 登录: admin / camp2026
 ```
 
@@ -376,9 +446,36 @@ http://127.0.0.1:19098/admin/index.html
 | application.yml | 数据库/安全/演示数据配置 |
 | CampSecurityConfig.java | 安全过滤链 + 登录过滤器 |
 | JsonLoginFilter.java | JSON 登录认证 |
-| AdminController.java | 后台管理 API |
-| PublicController.java | 前台公开 API |
+| AdminController.java | 后台聚合 API |
+| BookingController.java | 预订 CRUD + 筛选 |
+| BookingRepository.java | 预订仓库 (含 findByFilters JPQL) |
+| BookingService.java | 预订业务 (含 listWithFilters) |
 | CampDemoDataSeeder.java | 演示数据填充 |
-| bloom-admin-bridge.js | API Bridge (当前 v7) |
-| bloomAdmin-DJ6i0_H4.js | React SPA (18个组件) |
+| bloom-admin-bridge.js | API Bridge v10 (97KB, 完整 CRUD: 订单/营地区域/活动课程/游客反馈/资产管理/用户管理/巡检管理/告警管理) |
+| bloomAdmin-DJ6i0_H4.js | React SPA (25KB, 18个组件) |
 | start-admin.cjs | 独立后台服务器 |
+| admin-spa.html | 商用 SPA 唯一入口 (v12) |
+| admin-spa.js | React 组件 (88KB, 10页面全功能) |
+| pom.xml | Maven 构建 (含 springdoc, poi-ooxml) |
+---
+
+---
+
+## 九、版本历史
+
+### v12 (2026-06-28) — UI 美化 + 弹窗修复
+- 修复所有弹窗点击穿透问题（overlay 包裹 modal-box + stopPropagation）
+- 修复毛玻璃模糊过高导致文字模糊（backdrop-filter: 50px→6px）
+- 引入 Inter 字体，统一全站字体
+- 提升文字对比度（#e8edf5→#d0e0d8, #5a6a82→#80a898）
+- 统一森系绿色配色（主色 #3d7a4a, 强调 #6bcf8a, 危险 #e87060）
+- 修复所有表单字段名一致性（name/title 字段对齐）
+- 管理后台入口: http://127.0.0.1:19098/admin/admin-spa.html
+
+### v11 (2026-06-28) — UI 美化 + 3D 地球背景
+- 替换视频背景为 CDN 绿色地球旋转视频（与 bloomAdmin.js 原版一致）
+- 应用森系绿色主题配色（深绿底 + 青绿强调）
+- 修复 AssetsPage 表单字段名错误（title→name）
+- 修复 ZonesPage 表单字段名错误（title→name）
+- 登录页保留原始角色动画（4个 SVG 角色交互）
+- 管理后台 UI 风格与绿色地球主题统一

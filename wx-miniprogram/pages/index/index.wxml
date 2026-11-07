@@ -1,0 +1,43 @@
+<view class="page">
+  <view class="header">
+    <view class="brand">
+      <text class="brand-icon">🌲</text>
+      <text class="brand-text">Nature Haven</text>
+    </view>
+    <text class="subtitle">探索 · 体验 · 成长</text>
+  </view>
+
+  <view class="section-title">
+    <text class="title-main">活动课程</text>
+    <text class="section-sub">{{activities.length}} 场活动</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading"><text>🌿 加载中...</text></view>
+
+  <view wx:elif="{{activities.length == 0}}" class="empty">
+    <text>暂无活动</text>
+  </view>
+
+  <view wx:else class="activity-list">
+    <view class="activity-card" wx:for="{{activities}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
+      <view class="card-header">
+        <text class="card-title">{{item.title}}</text>
+        <view class="status-tag status-{{item.status == '报名中' ? 'open' : (item.status == '已满员' ? 'full' : 'closed')}}">
+          <text>{{item.status}}</text>
+        </view>
+      </view>
+      <view class="card-body">
+        <view class="card-info">
+          <text class="info-label">{{item.date}}</text>
+          <text class="info-label">{{item.zone}}</text>
+        </view>
+        <view class="progress-wrap">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{item.quota > 0 ? (item.joined / item.quota * 100) : 0}}%"></view>
+          </view>
+          <text class="progress-text">{{item.joined}}/{{item.quota}} 人</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

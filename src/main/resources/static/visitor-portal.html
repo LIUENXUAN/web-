@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>营地公园 · 游客中心</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",system-ui,sans-serif;background:#0a1511;color:#d0e0d8;min-height:100vh}
+.login-page{display:flex;min-height:100vh;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 30%,rgba(61,122,74,0.12),transparent 60%),#0a1511}
+.login-card{width:400px;max-width:92vw;padding:40px 36px;background:rgba(8,18,14,0.92);border-radius:20px;border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(12px)}
+.login-card h1{font-size:24px;font-weight:700;color:#e0f0e8;margin-bottom:4px}
+.login-card .sub{font-size:13px;color:#80a898;margin-bottom:28px}
+.login-card .form-group{margin-bottom:18px}
+.login-card label{display:block;font-size:12px;color:#90b8a8;margin-bottom:6px;font-weight:500}
+.login-card input{width:100%;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(119,217,239,0.08);border-radius:8px;color:#d0e0d8;font-size:14px;outline:none;transition:border .2s}
+.login-card input:focus{border-color:rgba(74,154,94,0.5)}
+.login-card .btn-login{width:100%;padding:12px;border:none;border-radius:8px;background:#3d7a4a;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s;margin-top:6px}
+.login-card .btn-login:hover{background:#2e6a3a}
+.login-card .btn-login:disabled{opacity:.5;cursor:not-allowed}
+.login-card .error{color:#e87060;font-size:13px;margin-top:10px;text-align:center}
+.login-card .switch-link{text-align:center;margin-top:16px;font-size:13px;color:#80a898}
+.login-card .switch-link a{color:#6bcf8a;cursor:pointer;text-decoration:none}
+.login-card .tabs{display:flex;gap:0;margin-bottom:24px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.06)}
+.login-card .tabs div{flex:1;text-align:center;padding:10px;font-size:13px;cursor:pointer;color:#80a898;transition:all .2s}
+.login-card .tabs div.active{background:#3d7a4a;color:#e0f0e8;font-weight:600}
+.app-layout{display:flex;height:100dvh;overflow:hidden}
+.sidebar{width:240px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,0.06);background:rgba(8,18,14,0.92);backdrop-filter:blur(8px)}
+.sidebar-brand{padding:18px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sidebar-brand .mark{width:30px;height:30px;border-radius:8px;background:#6bcf8a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#0a1511}
+.sidebar-brand strong{font-size:14px;color:#d0e0d8}
+.sidebar-nav{flex:1;overflow-y:auto;padding:10px 0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;color:#80a898;font-size:13px;transition:all .15s;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:rgba(255,255,255,0.03);color:#c0e0d0}
+.nav-item.active{background:rgba(107,207,138,0.1);color:#6bcf8a;font-weight:500}
+.sidebar-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px}
+.sidebar-footer .avatar{width:30px;height:30px;border-radius:50%;background:rgba(107,207,138,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;color:#6bcf8a}
+.sidebar-footer .info{flex:1;min-width:0}
+.sidebar-footer .name{font-size:13px;color:#d0e0d8}
+.sidebar-footer .phone{font-size:11px;color:#80a898}
+.sidebar-footer .logout{background:none;border:none;color:#80a898;cursor:pointer;padding:4px;font-size:16px}
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;background:rgba(8,18,14,0.5);backdrop-filter:blur(4px)}
+.top-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.top-bar h2{font-size:17px;font-weight:600;color:#e0f0e8;margin:0}
+.page-content{flex:1;overflow-y:auto;padding:24px}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:24px}
+.zone-card,.activity-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:18px;transition:all .2s}
+.zone-card:hover,.activity-card:hover{border-color:rgba(107,207,138,0.2);background:rgba(255,255,255,0.05)}
+.zone-card h3,.activity-card h3{font-size:15px;font-weight:600;color:#e0f0e8;margin-bottom:8px}
+.zone-card .meta,.activity-card .meta{font-size:12px;color:#80a898;margin-bottom:4px}
+.zone-card .price{font-size:18px;font-weight:700;color:#6bcf8a}
+.status-badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:500}
+.status-open{background:rgba(74,158,94,0.15);color:#4a9e5e;border:1px solid rgba(74,158,94,0.25)}
+.status-closed{background:rgba(212,149,42,0.15);color:#d4952a;border:1px solid rgba(212,149,42,0.25)}
+.status-full{background:rgba(232,112,96,0.15);color:#e87060;border:1px solid rgba(232,112,96,0.25)}
+.status-done{background:rgba(138,154,138,0.15);color:#8a9a8a;border:1px solid rgba(138,154,138,0.25)}
+.btn{padding:8px 16px;border-radius:6px;font-size:12px;cursor:pointer;border:none;font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
+.btn-primary{background:#3d7a4a;color:#fff}
+.btn-primary:hover{background:#2e6a3a}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-success{background:rgba(74,158,94,0.12);color:#4a9e5e;border:1px solid rgba(74,158,94,0.25)}
+.btn-success:hover{background:rgba(74,158,94,0.2)}
+.btn-danger{background:rgba(232,112,96,0.1);color:#e87060;border:1px solid rgba(232,112,96,0.25)}
+.btn-danger:hover{background:rgba(232,112,96,0.18)}
+.btn-ghost{background:transparent;color:#80a898;border:1px solid rgba(255,255,255,0.08)}
+.btn-ghost:hover{background:rgba(255,255,255,0.04)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.feedback-form{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:24px;max-width:600px}
+.feedback-form .form-group{margin-bottom:16px}
+.feedback-form label{display:block;font-size:12px;color:#90b8a8;margin-bottom:6px;font-weight:500}
+.feedback-form input,.feedback-form textarea{width:100%;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(119,217,239,0.08);border-radius:8px;color:#d0e0d8;font-size:13px;outline:none;transition:border .2s;font-family:inherit}
+.feedback-form input:focus,.feedback-form textarea:focus{border-color:rgba(74,154,94,0.5)}
+.feedback-form textarea{resize:vertical;min-height:100px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{text-align:left;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.06);color:#80a898;font-size:10px;text-transform:uppercase;letter-spacing:.3px}
+.data-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#d0e0d8}
+.data-table tr:hover td{background:rgba(255,255,255,0.02)}
+.toast{position:fixed;top:20px;right:20px;z-index:99999;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;max-width:360px;animation:fadeIn .3s}
+.toast-success{background:rgba(74,158,94,0.2);border:1px solid rgba(74,158,94,0.3);color:#6bcf8a}
+.toast-error{background:rgba(232,112,96,0.2);border:1px solid rgba(232,112,96,0.3);color:#e87060}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.loading{text-align:center;padding:60px 20px;color:#80a898;font-size:14px}
+.loading .spinner{display:inline-block;width:32px;height:32px;border:3px solid rgba(107,207,138,0.15);border-top-color:#6bcf8a;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:40px;color:#80a898;font-size:13px}
+.section-title{font-size:15px;font-weight:600;color:#e0f0e8;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title .count{font-size:11px;color:#80a898;font-weight:400}
+@media(max-width:768px){.sidebar{width:60px}.sidebar-brand strong,.nav-item span,.sidebar-footer .info{display:none}.sidebar-brand{padding:14px 12px;justify-content:center}.nav-item{justify-content:center;padding:12px}.sidebar-footer{padding:10px;justify-content:center}.sidebar-footer .logout{font-size:18px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+var API = '';
+
+function el(tag, attrs) {
+  for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) { children[_key - 2] = arguments[_key]; }
+  var dom = document.createElement(tag);
+  if (attrs) {
+    Object.keys(attrs).forEach(function(k) {
+      if (k === 'className') dom.className = attrs[k];
+      else if (k === 'style' && typeof attrs[k] === 'object') Object.assign(dom.style, attrs[k]);
+      else if (k.indexOf('on') === 0) dom.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
+      else if (k === 'disabled') { if (attrs[k]) dom.disabled = true; else dom.disabled = false; }
+      else if (k === 'value') dom.value = attrs[k];
+      else if (k === 'type' || k === 'placeholder' || k === 'rows' || k === 'min' || k === 'max') dom.setAttribute(k, attrs[k]);
+      else dom.setAttribute(k, attrs[k]);
+    });
+  }
+  function append(c) {
+    if (c == null || c === false || c === true) return;
+    if (Array.isArray(c)) { c.forEach(append); return; }
+    dom.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  }
+  (children || []).forEach(append);
+  return dom;
+}
+
+var state = { page: 'login', user: null };
+var appEl = document.getElementById('app');
+
+function api(path, opts) {
+  opts = opts || {};
+  var headers = { 'Content-Type': 'application/json' };
+  return fetch(API + path, { headers: headers, credentials: 'include', method: opts.method, body: opts.body })
+    .then(function(r) { return r.json().then(function(d) { if (d.code !== 200) throw new Error(d.msg || '请求失败'); return d.data; }); });
+}
+
+function toast(msg, type) {
+  var t = el('div', { className: 'toast toast-' + (type || 'success') }, msg);
+  document.body.appendChild(t);
+  setTimeout(function() { t.remove(); }, 3000);
+}
+
+function render() {
+  appEl.innerHTML = '';
+  if (state.page === 'login') appEl.appendChild(renderLogin());
+  else appEl.appendChild(renderApp());
+}
+
+// ===== Login Page =====
+function renderLogin() {
+  var isRegister = false;
+  var formData = { username: '', phone: '', password: '', loading: false, error: '' };
+
+  function buildForm() {
+    var card = appEl.querySelector('.login-card');
+    if (!card) return;
+    card.innerHTML = '';
+    card.appendChild(el('h1', null, isRegister ? '注册账号' : '游客中心'));
+    card.appendChild(el('div', { className: 'sub' }, isRegister ? '注册后即可预约活动、查看营地' : '登录后查看活动课程与营地信息'));
+
+    var tabs = el('div', { className: 'tabs' },
+      el('div', { className: isRegister ? '' : 'active', onClick: function() { if (isRegister) { isRegister = false; formData.error = ''; buildForm(); } } }, '登录'),
+      el('div', { className: isRegister ? 'active' : '', onClick: function() { if (!isRegister) { isRegister = true; formData.error = ''; buildForm(); } } }, '注册')
+    );
+    card.appendChild(tabs);
+
+    var f = el('form', { onSubmit: function(e) { e.preventDefault(); doSubmit(); } },
+      el('div', { className: 'form-group' },
+        el('label', null, '用户名'),
+        el('input', { type: 'text', value: formData.username, placeholder: '请输入用户名', onInput: function(e) { formData.username = e.target.value; } })
+      ),
+      isRegister ? el('div', { className: 'form-group' },
+        el('label', null, '手机号'),
+        el('input', { type: 'text', value: formData.phone, placeholder: '请输入手机号', onInput: function(e) { formData.phone = e.target.value; } })
+      ) : null,
+      el('div', { className: 'form-group' },
+        el('label', null, '密码'),
+        el('input', { type: 'password', value: formData.password, placeholder: '请输入密码', onInput: function(e) { formData.password = e.target.value; } })
+      ),
+      el('button', { className: 'btn-login', disabled: formData.loading, type: 'submit' }, formData.loading ? '处理中...' : (isRegister ? '注册' : '登录')),
+      formData.error ? el('div', { className: 'error' }, formData.error) : null
+    );
+    card.appendChild(f);
+  }
+
+  function doSubmit() {
+    formData.loading = true;
+    formData.error = '';
+    buildForm();
+
+    if (isRegister) {
+      api('/api/register', { method: 'POST', body: JSON.stringify({ username: formData.username, phone: formData.phone, password: formData.password }) })
+        .then(function() {
+          toast('注册成功，请登录');
+          isRegister = false;
+          formData.loading = false;
+          buildForm();
+        })
+        .catch(function(err) {
+          formData.error = err.message;
+          formData.loading = false;
+          buildForm();
+        });
+    } else {
+      api('/api/login', { method: 'POST', body: JSON.stringify({ username: formData.username, password: formData.password }) })
+        .then(function() {
+          state.user = { username: formData.username };
+          state.page = 'dashboard';
+          render();
+        })
+        .catch(function(err) {
+          formData.error = err.message;
+          formData.loading = false;
+          buildForm();
+        });
+    }
+  }
+
+  var container = el('div', { className: 'login-page' }, el('div', { className: 'login-card' }));
+  setTimeout(buildForm, 0);
+  return container;
+}
+
+// ===== App Layout =====
+function renderApp() {
+  var currentPage = state.page;
+
+  function navigate(p) {
+    state.page = p;
+    render();
+  }
+
+  function doLogout() {
+    api('/api/logout', { method: 'POST' }).catch(function() {});
+    state.user = null;
+    state.page = 'login';
+    render();
+  }
+
+  var navItems = [
+    { key: 'dashboard', label: '🏕 首页', icon: '🏕' },
+    { key: 'activities', label: '🎯 活动课程', icon: '🎯' },
+    { key: 'zones', label: '🏠 营地区域', icon: '🏠' },
+    { key: 'feedback', label: '💬 游玩反馈', icon: '💬' },
+    { key: 'my', label: '📋 我的记录', icon: '📋' }
+  ];
+
+  var sidebar = el('div', { className: 'sidebar' },
+    el('div', { className: 'sidebar-brand' }, el('div', { className: 'mark' }, 'C'), el('strong', null, '游客中心')),
+    el('div', { className: 'sidebar-nav' },
+      navItems.map(function(item) {
+        return el('button', { className: 'nav-item' + (currentPage === item.key ? ' active' : ''), onClick: function() { navigate(item.key); } },
+          el('span', null, item.icon), el('span', null, item.label));
+      })
+    ),
+    el('div', { className: 'sidebar-footer' },
+      el('div', { className: 'avatar' }, state.user ? state.user.username.charAt(0).toUpperCase() : 'U'),
+      el('div', { className: 'info' }, el('div', { className: 'name' }, state.user ? state.user.username : '用户'), el('div', { className: 'phone' }, '游客')),
+      el('button', { className: 'logout', onClick: doLogout }, '🚪')
+    )
+  );
+
+  var titles = { dashboard: '🏕 首页概览', activities: '🎯 活动课程', zones: '🏠 营地区域', feedback: '💬 游玩反馈', my: '📋 我的记录' };
+  var main = el('div', { className: 'main-area' },
+    el('div', { className: 'top-bar' }, el('h2', null, titles[currentPage] || '游客中心')),
+    el('div', { className: 'page-content', id: 'page-content' })
+  );
+
+  var layout = el('div', { className: 'app-layout' }, sidebar, main);
+  setTimeout(function() { loadPage(currentPage); }, 0);
+  return layout;
+}
+
+function loadPage(page) {
+  var content = document.getElementById('page-content');
+  if (!content) return;
+  content.innerHTML = '<div class="loading"><div class="spinner"></div>加载中...</div>';
+  switch (page) {
+    case 'dashboard': loadDashboard(content); break;
+    case 'activities': loadActivities(content); break;
+    case 'zones': loadZones(content); break;
+    case 'feedback': loadFeedback(content); break;
+    case 'my': loadMyRecords(content); break;
+  }
+}
+
+// ===== Dashboard =====
+function loadDashboard(content) {
+  var username = state.user.username;
+  Promise.all([
+    api('/api/portal/activities'),
+    api('/api/portal/zones'),
+    api('/api/portal/my/signups?username=' + encodeURIComponent(username))
+  ]).then(function(results) {
+    var activities = results[0] || [];
+    var zones = results[1] || [];
+    var signups = results[2] || [];
+    var activeActivities = activities.filter(function(a) { return a.status === '报名中'; });
+    var openZones = zones.filter(function(z) { return z.status === '开放' || z.status === '可预订'; });
+    content.innerHTML = '';
+    content.appendChild(el('div', { className: 'section-title' }, '欢迎回来，' + username));
+
+    var statsGrid = el('div', { style: 'display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px' });
+    var stats = [
+      { label: '可报名活动', value: activeActivities.length, color: '#6bcf8a' },
+      { label: '开放营地区域', value: openZones.length, color: '#4a9e5e' },
+      { label: '已报名活动', value: signups.length, color: '#d8ef69' }
+    ];
+    stats.forEach(function(s) {
+      statsGrid.appendChild(el('div', { style: 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px;text-align:center' },
+        el('div', { style: 'font-size:28px;font-weight:700;color:' + s.color }, String(s.value)),
+        el('div', { style: 'font-size:12px;color:#80a898;margin-top:4px' }, s.label)
+      ));
+    });
+    content.appendChild(statsGrid);
+
+    if (activeActivities.length > 0) {
+      content.appendChild(el('div', { className: 'section-title' }, '可报名活动 ', el('span', { className: 'count' }, '(' + activeActivities.length + ')')));
+      var grid = el('div', { className: 'card-grid' });
+      activeActivities.slice(0, 4).forEach(function(a) {
+        grid.appendChild(el('div', { className: 'activity-card' },
+          el('h3', null, a.title),
+          el('div', { className: 'meta' }, '📅 ' + a.date + '  📍 ' + (a.zone || '未知')),
+          el('div', { className: 'meta' }, '名额 ' + a.joined + '/' + a.quota + ' 剩余 ' + (a.quota - a.joined)),
+          el('div', { style: 'margin-top:8px' }, el('span', { className: 'status-badge status-open' }, '报名中'))
+        ));
+      });
+      content.appendChild(grid);
+    }
+
+    if (openZones.length > 0) {
+      content.appendChild(el('div', { className: 'section-title' }, '开放营地区域 ', el('span', { className: 'count' }, '(' + openZones.length + ')')));
+      var zGrid = el('div', { className: 'card-grid' });
+      openZones.slice(0, 4).forEach(function(z) {
+        zGrid.appendChild(el('div', { className: 'zone-card' },
+          el('h3', null, z.name),
+          el('div', { className: 'meta' }, '类型: ' + (z.type || '-') + '  |  容量: ' + (z.capacity || '-') + '人'),
+          el('div', { className: 'price' }, '¥' + (z.price || 0).toLocaleString()),
+          el('div', { style: 'margin-top:6px' }, el('span', { className: 'status-badge status-open' }, z.status))
+        ));
+      });
+      content.appendChild(zGrid);
+    }
+  }).catch(function(err) {
+    content.innerHTML = '<div class="empty">加载失败: ' + err.message + '</div>';
+  });
+}
+
+// ===== Activities =====
+function loadActivities(content) {
+  var username = state.user.username;
+  Promise.all([
+    api('/api/portal/activities'),
+    api('/api/portal/my/signups?username=' + encodeURIComponent(username))
+  ]).then(function(results) {
+    var activities = results[0] || [];
+    var signups = results[1] || [];
+    var signed = {};
+    signups.forEach(function(s) { signed[s.activityId] = true; });
+    content.innerHTML = '';
+    content.appendChild(el('div', { className: 'section-title' }, '所有活动课程 ', el('span', { className: 'count' }, '共 ' + activities.length + ' 个')));
+
+    var grid = el('div', { className: 'card-grid' });
+    activities.forEach(function(a) {
+      var isSigned = signed[a.id];
+      var remaining = a.quota - a.joined;
+      var badgeClass = a.status === '报名中' ? 'status-open' : a.status === '已满员' ? 'status-full' : 'status-done';
+
+      var card = el('div', { className: 'activity-card' },
+        el('h3', null, a.title),
+        el('div', { className: 'meta' }, '📅 ' + (a.date || '-') + '  📍 ' + (a.zone || '未知')),
+        el('div', { className: 'meta' }, '名额 ' + a.joined + '/' + a.quota + ' 剩余 ' + remaining),
+        a.description ? el('div', { style: 'font-size:12px;color:#80a898;margin-bottom:8px;margin-top:4px' }, a.description.substring(0, 80) + (a.description.length > 80 ? '...' : '')) : null,
+        el('div', { style: 'display:flex;align-items:center;gap:8px;margin-top:8px' },
+          el('span', { className: 'status-badge ' + badgeClass }, a.status),
+          isSigned ? el('button', { className: 'btn btn-danger btn-sm', onClick: function() { doCancelSignup(a.id); } }, '取消报名')
+            : (a.status === '报名中' ? el('button', { className: 'btn btn-primary btn-sm', onClick: function() { doSignup(a.id, a.title); } }, '立即报名')
+              : el('button', { className: 'btn btn-ghost btn-sm', disabled: true }, '不可报名')),
+          isSigned ? el('span', { style: 'font-size:11px;color:#6bcf8a' }, '✅ 已报名') : null
+        )
+      );
+      grid.appendChild(card);
+    });
+    content.appendChild(grid);
+  }).catch(function(err) {
+    content.innerHTML = '<div class="empty">加载失败: ' + err.message + '</div>';
+  });
+}
+
+function doSignup(id, title) {
+  var username = state.user.username;
+  var name = prompt('请输入您的姓名：');
+  if (!name) return;
+  var phone = prompt('请输入您的手机号：');
+  if (!phone || !/^1[3-9]\d{9}$/.test(phone)) { toast('请输入正确的手机号', 'error'); return; }
+  api('/api/portal/activities/' + id + '/signup', { method: 'POST', body: JSON.stringify({ username: username, name: name, phone: phone }) })
+    .then(function() { toast('报名成功！'); loadPage('activities'); })
+    .catch(function(err) { toast(err.message, 'error'); });
+}
+
+function doCancelSignup(id) {
+  if (!confirm('确定取消报名？')) return;
+  api('/api/portal/activities/' + id + '/signup', { method: 'DELETE', body: JSON.stringify({ username: state.user.username }) })
+    .then(function() { toast('已取消报名'); loadPage('activities'); })
+    .catch(function(err) { toast(err.message, 'error'); });
+}
+
+// ===== Zones =====
+function loadZones(content) {
+  api('/api/portal/zones').then(function(zones) {
+    content.innerHTML = '';
+    content.appendChild(el('div', { className: 'section-title' }, '营地区域 ', el('span', { className: 'count' }, '共 ' + zones.length + ' 个')));
+    var grid = el('div', { className: 'card-grid' });
+    zones.forEach(function(z) {
+      var badgeClass = (z.status === '开放' || z.status === '可预订') ? 'status-open' : z.status === '维护中' ? 'status-closed' : 'status-done';
+      grid.appendChild(el('div', { className: 'zone-card' },
+        el('h3', null, z.name),
+        el('div', { className: 'meta' }, '类型: ' + (z.type || '-') + '  |  容量: ' + (z.capacity || '-') + '人'),
+        el('div', { className: 'price' }, '¥' + (z.price || 0).toLocaleString(), z.price ? el('span', { style: 'font-size:12px;color:#80a898;font-weight:400' }, '/晚') : null),
+        z.description ? el('div', { style: 'font-size:12px;color:#80a898;margin-bottom:8px;margin-top:4px' }, z.description.substring(0, 100) + (z.description.length > 100 ? '...' : '')) : null,
+        el('div', { style: 'display:flex;align-items:center;gap:8px;margin-top:8px' },
+          el('span', { className: 'status-badge ' + badgeClass }, z.status),
+          (z.status === '开放' || z.status === '可预订') ? el('span', { style: 'font-size:11px;color:#6bcf8a' }, '✅ 可预订') : el('span', { style: 'font-size:11px;color:#e87060' }, '⛔ 不可预订')
+        )
+      ));
+    });
+    content.appendChild(grid);
+  }).catch(function(err) {
+    content.innerHTML = '<div class="empty">加载失败: ' + err.message + '</div>';
+  });
+}
+
+// ===== Feedback =====
+function loadFeedback(content) {
+  content.innerHTML = '';
+  content.appendChild(el('div', { className: 'section-title' }, '提交游玩反馈'));
+  var form = el('div', { className: 'feedback-form' },
+    el('div', { className: 'form-group' }, el('label', null, '您的姓名'), el('input', { type: 'text', id: 'fb-name', placeholder: '请输入姓名', value: state.user.username })),
+    el('div', { className: 'form-group' }, el('label', null, '反馈内容'), el('textarea', { id: 'fb-content', placeholder: '请描述您的游玩体验、建议或问题...' })),
+    el('button', { className: 'btn btn-primary', id: 'fb-btn', onClick: function() {
+      var name = document.getElementById('fb-name').value.trim();
+      var content = document.getElementById('fb-content').value.trim();
+      if (!name) { toast('请输入姓名', 'error'); return; }
+      if (!content) { toast('请输入反馈内容', 'error'); return; }
+      var btn = document.getElementById('fb-btn');
+      btn.disabled = true;
+      btn.textContent = '提交中...';
+      api('/api/portal/feedback', { method: 'POST', body: JSON.stringify({ name: name, content: content }) })
+        .then(function() {
+          toast('反馈提交成功，感谢您的建议！');
+          document.getElementById('fb-content').value = '';
+          btn.disabled = false;
+          btn.textContent = '提交反馈';
+        })
+        .catch(function(err) {
+          toast(err.message, 'error');
+          btn.disabled = false;
+          btn.textContent = '提交反馈';
+        });
+    } }, '提交反馈')
+  );
+  content.appendChild(form);
+}
+
+// ===== My Records =====
+function loadMyRecords(content) {
+  var username = state.user.username;
+  Promise.all([
+    api('/api/portal/my/signups?username=' + encodeURIComponent(username)),
+    api('/api/portal/user/info?username=' + encodeURIComponent(username))
+  ]).then(function(results) {
+    var signups = results[0] || [];
+    var userInfo = results[1] || {};
+    content.innerHTML = '';
+
+    content.appendChild(el('div', { className: 'section-title' }, '个人信息'));
+    content.appendChild(el('div', { style: 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;margin-bottom:24px;display:flex;gap:24px;flex-wrap:wrap' },
+      el('div', null, el('div', { style: 'font-size:11px;color:#80a898;margin-bottom:2px' }, '用户名'), el('div', { style: 'font-size:14px;color:#e0f0e8' }, userInfo.username || username)),
+      el('div', null, el('div', { style: 'font-size:11px;color:#80a898;margin-bottom:2px' }, '手机号'), el('div', { style: 'font-size:14px;color:#e0f0e8' }, userInfo.phone || '-')),
+      el('div', null, el('div', { style: 'font-size:11px;color:#80a898;margin-bottom:2px' }, '显示名'), el('div', { style: 'font-size:14px;color:#e0f0e8' }, userInfo.displayName || username))
+    ));
+
+    content.appendChild(el('div', { className: 'section-title' }, '我的活动报名 ', el('span', { className: 'count' }, '共 ' + signups.length + ' 条')));
+    if (signups.length === 0) {
+      content.appendChild(el('div', { className: 'empty' }, '暂无报名记录，去活动课程页面看看吧'));
+    } else {
+      var table = el('table', { className: 'data-table' },
+        el('thead', null, el('tr', null, el('th', null, '活动ID'), el('th', null, '姓名'), el('th', null, '手机号'), el('th', null, '报名时间'))),
+        el('tbody', null, signups.map(function(s) {
+          return el('tr', { key: s.id },
+            el('td', null, s.activityId),
+            el('td', null, s.name),
+            el('td', null, s.phone),
+            el('td', null, s.createdAt ? s.createdAt.substring(0, 16).replace('T', ' ') : '-')
+          );
+        }))
+      );
+      content.appendChild(table);
+    }
+
+    if (userInfo.phone) {
+      api('/api/portal/my/bookings?phone=' + encodeURIComponent(userInfo.phone)).then(function(bookings) {
+        if (!bookings || bookings.length === 0) return;
+        var section = el('div', { style: 'margin-top:24px' });
+        section.appendChild(el('div', { className: 'section-title' }, '我的营地预订 ', el('span', { className: 'count' }, '共 ' + bookings.length + ' 条')));
+        var tbl = el('table', { className: 'data-table' },
+          el('thead', null, el('tr', null, el('th', null, '营地'), el('th', null, '日期'), el('th', null, '人数'), el('th', null, '状态'), el('th', null, '备注'))),
+          el('tbody', null, bookings.map(function(b) {
+            var stCls = (b.status === '已确认' || b.status === '已完成') ? 'status-open' : b.status === '待确认' ? 'status-closed' : 'status-done';
+            return el('tr', { key: b.id },
+              el('td', null, b.zone),
+              el('td', null, b.date || '-'),
+              el('td', null, String(b.people || '-')),
+              el('td', null, el('span', { className: 'status-badge ' + stCls }, b.status)),
+              el('td', null, b.remark || '-')
+            );
+          }))
+        );
+        section.appendChild(tbl);
+        content.appendChild(section);
+      }).catch(function() {});
+    }
+  }).catch(function(err) {
+    content.innerHTML = '<div class="empty">加载失败: ' + err.message + '</div>';
+  });
+}
+
+render();
+</script>
+</body>
+</html>

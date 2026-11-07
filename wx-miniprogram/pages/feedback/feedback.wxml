@@ -1,0 +1,13 @@
+<view class="page">
+  <view class="header">
+    <text class="header-title">提交反馈</text>
+    <text class="header-desc">您的意见帮助我们做得更好</text>
+  </view>
+
+  <view class="form-card">
+    <input class="form-input" placeholder="您的姓名（选填）" value="{{name}}" bindinput="onNameInput" />
+    <textarea class="form-textarea" placeholder="请描述您的体验、建议或遇到的问题..." value="{{content}}" bindinput="onContentInput" maxlength="1000" />
+    <text class="char-count">{{content.length}}/1000</text>
+    <button class="btn-primary" bindtap="doSubmit" loading="{{submitting}}">提交反馈</button>
+  </view>
+</view>

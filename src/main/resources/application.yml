@@ -1,4 +1,4 @@
-server:
+﻿server:
   port: 8080
 
 spring:
@@ -40,3 +40,7 @@ camp:
   admin:
     username: admin
     password: camp2026
+
+wx:
+  appid: your_appid_here
+  secret: your_secret_here

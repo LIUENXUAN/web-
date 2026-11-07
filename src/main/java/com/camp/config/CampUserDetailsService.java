@@ -20,7 +20,10 @@ public class CampUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserAccount account = userRepo.findByUsername(username)
-            .orElseThrow(() -> new UsernameNotFoundException("用户不存在: " + username));
+            .orElseGet(() -> userRepo.findByPhone(username).orElse(null));
+        if (account == null) {
+            throw new UsernameNotFoundException("用户不存在: " + username);
+        }
 
         return User.builder()
             .username(account.getUsername())

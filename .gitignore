@@ -27,3 +27,10 @@ start-five-pages.cjs
 *.png
 *.bmp
 push-bundle.bundle
+
+# 本地工具/临时目录（不上传）
+.agents/
+.preview/
+# 含个人身份信息的合作开发协议（公开仓库勿提交）
+软件合作开发协议.docx
+软件合作开发协议.pdf

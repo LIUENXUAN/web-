@@ -40,17 +40,15 @@ public class FeedbackService {
         return feedback.findById(id).map(item -> {
             item.setStatus(status);
             Feedback saved = feedback.save(item);
-            OperationLog log = new OperationLog(null, operator, "更新反馈状态",
-                "Feedback", id, "状态: " + status, LocalDateTime.now());
-            logs.save(log);
+            logs.save(new OperationLog(null, operator, "更新反馈状态",
+                "Feedback", id, "状态: " + status, LocalDateTime.now()));
             return saved;
         });
     }
 
     public void delete(String id, String operator) {
         feedback.deleteById(id);
-        OperationLog log = new OperationLog(null, operator, "删除反馈",
-            "Feedback", id, "已删除", LocalDateTime.now());
-        logs.save(log);
+        logs.save(new OperationLog(null, operator, "删除反馈",
+            "Feedback", id, "已删除", LocalDateTime.now()));
     }
 }

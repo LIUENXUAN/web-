@@ -1,4 +1,4 @@
-﻿@echo off
+@echo off
 chcp 65001 >nul
 cd /d "%~dp0"
 echo 正在启动最终版后台（自动寻找空闲端口，不影响其他项目）...

@@ -1,10 +1,10 @@
-﻿const http = require('http');
+const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 
-const root = __dirname;
+const root = path.resolve(__dirname, '..');
 const host = '127.0.0.1';
 const startPort = Number(process.env.CAMP_ADMIN_PORT || 19098);
 const maxPort = startPort + 80;
@@ -25,7 +25,7 @@ const mime = {
 
 function safePath(urlPath) {
   const clean = decodeURIComponent(urlPath.split('?')[0]);
-  const relative = clean === '/' ? 'admin/index.html' : clean.replace(/^\/+/, '');
+  const relative = clean === '/' ? '后台/admin/admin-spa.html' : clean.replace(/^\/+/, '');
   const full = path.resolve(root, relative);
   if (!full.startsWith(root)) return null;
   return full;
@@ -97,7 +97,7 @@ function listen(port) {
     }
   });
   server.listen(port, host, () => {
-    const url = `http://${host}:${port}/admin/index.html?v=final`;
+    const url = `http://${host}:${port}/后台/admin/admin-spa.html`;
     console.log(`最终版后台已启动：${url}`);
     console.log(`API 代理指向：${API_TARGET}`);
     spawn('cmd', ['/c', 'start', 'Camp Admin Final', url], { detached: true, stdio: 'ignore' }).unref();

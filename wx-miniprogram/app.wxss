@@ -1,0 +1,19 @@
+page {
+  background: #05100a;
+  min-height: 100vh;
+  color: #f3efe4;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-size: 28rpx;
+}
+
+button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  line-height: inherit;
+}
+
+button::after {
+  border: none;
+}

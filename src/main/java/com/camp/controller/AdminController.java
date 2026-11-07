@@ -18,11 +18,12 @@ public class AdminController {
     private final CampAssetRepository assets;
     private final InspectionRepository inspections;
     private final AlertRepository alerts;
+    private final OperationLogRepository logs;
 
     public AdminController(ZoneRepository zones, ActivityRepository activities,
                             BookingRepository bookings, FeedbackRepository feedback,
                             CampAssetRepository assets, InspectionRepository inspections,
-                            AlertRepository alerts) {
+                            AlertRepository alerts, OperationLogRepository logs) {
         this.zones = zones;
         this.activities = activities;
         this.bookings = bookings;
@@ -30,6 +31,7 @@ public class AdminController {
         this.assets = assets;
         this.inspections = inspections;
         this.alerts = alerts;
+        this.logs = logs;
     }
 
     @GetMapping("")
@@ -43,6 +45,7 @@ public class AdminController {
         data.put("assets", assets.findAll());
         data.put("inspections", inspections.findAll());
         data.put("alerts", alerts.findAll());
+        data.put("logs", logs.findAllByOrderByCreatedAtDesc(org.springframework.data.domain.PageRequest.of(0, 50)).getContent());
         return data;
     }
 
@@ -57,89 +60,8 @@ public class AdminController {
         m.put("assetHealth", 87);
         m.put("alertCloseRate", 92);
         m.put("avgOrderValue", 356);
+        m.put("bookings", totalBookings);
+        m.put("pendingItems", feedback.countByStatus("待处理") + alerts.countByStatus("待处理"));
         return m;
-    }
-
-    @PutMapping("/bookings/{id}")
-    public Map<String, Object> updateBookingStatus(@PathVariable String id, @Valid @RequestBody StatusRequest request) {
-        Map<String, Object> result = new HashMap<>();
-        bookings.findById(id).ifPresentOrElse(item -> {
-            item.setStatus(request.getStatus());
-            bookings.save(item);
-            result.put("ok", true);
-        }, () -> result.put("error", "预订不存在"));
-        return result;
-    }
-
-    @PutMapping("/feedback/{id}")
-    public Map<String, Object> updateFeedbackStatus(@PathVariable String id, @Valid @RequestBody StatusRequest request) {
-        Map<String, Object> result = new HashMap<>();
-        feedback.findById(id).ifPresentOrElse(item -> {
-            item.setStatus(request.getStatus());
-            feedback.save(item);
-            result.put("ok", true);
-        }, () -> result.put("error", "反馈不存在"));
-        return result;
-    }
-
-    @DeleteMapping("/feedback/{id}")
-    public Map<String, Object> deleteFeedback(@PathVariable String id) {
-        feedback.deleteById(id);
-        return Map.of("ok", (Object)true);
-    }
-
-    @PutMapping("/zones/{id}")
-    public Map<String, Object> updateZoneStatus(@PathVariable String id, @Valid @RequestBody StatusRequest request) {
-        Map<String, Object> result = new HashMap<>();
-        zones.findById(id).ifPresentOrElse(item -> {
-            item.setStatus(request.getStatus());
-            zones.save(item);
-            result.put("ok", true);
-        }, () -> result.put("error", "营地不存在"));
-        return result;
-    }
-
-    @PutMapping("/activities/{id}")
-    public Map<String, Object> updateActivityStatus(@PathVariable String id, @Valid @RequestBody StatusRequest request) {
-        Map<String, Object> result = new HashMap<>();
-        activities.findById(id).ifPresentOrElse(item -> {
-            item.setStatus(request.getStatus());
-            activities.save(item);
-            result.put("ok", true);
-        }, () -> result.put("error", "活动不存在"));
-        return result;
-    }
-
-    @PutMapping("/assets/{id}")
-    public Map<String, Object> updateAssetStatus(@PathVariable String id, @Valid @RequestBody StatusRequest request) {
-        Map<String, Object> result = new HashMap<>();
-        assets.findById(id).ifPresentOrElse(item -> {
-            item.setStatus(request.getStatus());
-            assets.save(item);
-            result.put("ok", true);
-        }, () -> result.put("error", "资产不存在"));
-        return result;
-    }
-
-    @PutMapping("/inspections/{id}")
-    public Map<String, Object> updateInspectionStatus(@PathVariable String id, @Valid @RequestBody StatusRequest request) {
-        Map<String, Object> result = new HashMap<>();
-        inspections.findById(id).ifPresentOrElse(item -> {
-            item.setStatus(request.getStatus());
-            inspections.save(item);
-            result.put("ok", true);
-        }, () -> result.put("error", "巡检不存在"));
-        return result;
-    }
-
-    @PutMapping("/alerts/{id}")
-    public Map<String, Object> updateAlertStatus(@PathVariable String id, @Valid @RequestBody StatusRequest request) {
-        Map<String, Object> result = new HashMap<>();
-        alerts.findById(id).ifPresentOrElse(item -> {
-            item.setStatus(request.getStatus());
-            alerts.save(item);
-            result.put("ok", true);
-        }, () -> result.put("error", "告警不存在"));
-        return result;
     }
 }

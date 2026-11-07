@@ -11,5 +11,280 @@
   </head>
   <body>
     <div id="root"></div>
-  </body>
+    <script>
+  // ===== 预订表单对接后端 API =====
+  (function() {
+    var API_BASE = '/api';
+
+    // 等待页面渲染完成后劫持表单
+
+  var currentUser = null;
+  var savedUser = localStorage.getItem('camp_user');
+  if (savedUser) { try { currentUser = JSON.parse(savedUser); } catch(e) {} }
+
+  function updateAuthUI() {
+    var nav = document.querySelector('.camp-nav nav');
+    if (!nav) { setTimeout(updateAuthUI, 300); return; }
+    var existing = document.querySelector('.nav-auth-btn');
+    if (existing) existing.remove();
+    var authBtn = document.createElement('a');
+    authBtn.className = 'nav-auth-btn';
+    authBtn.style.cssText = 'border-radius:999px;padding:10px 13px;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s,color .2s';
+    if (currentUser) {
+      authBtn.textContent = currentUser.username + ' | 退出';
+      authBtn.style.color = '#ffffffc7';
+      authBtn.addEventListener('click', function() { currentUser = null; localStorage.removeItem('camp_user'); updateAuthUI(); });
+    } else {
+      authBtn.textContent = '注册/登录';
+      authBtn.style.background = '#d6b56d';
+      authBtn.style.color = '#162015';
+      authBtn.addEventListener('click', function() { showLoginModal(); });
+    }
+    nav.appendChild(authBtn);
+  }
+
+  function showLoginModal() {
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+    var modal = document.createElement('div');
+    modal.style.cssText = 'background:linear-gradient(135deg,#1a2e1f,#0d1c14);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:32px;width:min(400px,calc(100vw - 40px));color:#f3efe4;box-shadow:0 34px 110px rgba(0,0,0,0.5)';
+    modal.innerHTML =
+      '<div style="font-size:22px;font-weight:800;margin-bottom:20px;font-family:Georgia,serif">登录</div>' +
+      '<div style="margin-bottom:14px"><label style="display:block;font-size:13px;font-weight:700;margin-bottom:4px;color:rgba(243,239,228,0.8)">用户名 / 手机号</label><input id="loginName" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#f3efe4;font-size:15px;outline:none" placeholder="请输入用户名或手机号" /></div>' +
+      '<div style="margin-bottom:20px"><label style="display:block;font-size:13px;font-weight:700;margin-bottom:4px;color:rgba(243,239,228,0.8)">密码</label><input id="loginPwd" type="password" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#f3efe4;font-size:15px;outline:none" placeholder="请输入密码" /></div>' +
+      '<div style="display:flex;gap:10px;margin-bottom:10px">' +
+        '<button id="loginCancel" style="flex:1;padding:12px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:#f3efe4;font-weight:800;cursor:pointer">取消</button>' +
+        '<button id="loginSubmit" style="flex:1;padding:12px;border-radius:999px;border:none;background:#d6b56d;color:#162015;font-weight:800;cursor:pointer">登录</button>' +
+      '</div>' +
+      '<div style="text-align:center;font-size:12px;color:rgba(243,239,228,0.5)">没有账号？<a id="gotoRegister" style="color:#d6b56d;cursor:pointer;text-decoration:underline">去注册</a></div>' +
+      '<div id="loginStatus" style="margin-top:10px;text-align:center;font-size:13px;display:none"></div>';
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+    document.getElementById('loginCancel').addEventListener('click', function() { overlay.remove(); });
+    document.getElementById('gotoRegister').addEventListener('click', function() { overlay.remove(); showRegisterModal(); });
+    document.getElementById('loginSubmit').addEventListener('click', function() {
+      var name = document.getElementById('loginName').value.trim();
+      var password = document.getElementById('loginPwd').value;
+      var statusEl = document.getElementById('loginStatus');
+      statusEl.style.display = 'block';
+      if (!name || !password) { statusEl.textContent = '请填写所有字段'; statusEl.style.color = '#e87060'; return; }
+      statusEl.textContent = '登录中...'; statusEl.style.color = 'rgba(243,239,228,0.6)';
+      fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: name, password: password }), credentials: 'include' })
+      .then(function(r) { return r.json(); })
+      .then(function(resp) {
+        if (resp.code === 200) {
+          currentUser = { username: name, phone: '' };
+          localStorage.setItem('camp_user', JSON.stringify(currentUser));
+          updateAuthUI();
+          statusEl.textContent = '登录成功！'; statusEl.style.color = '#6bcf8a';
+          setTimeout(function() { overlay.remove(); }, 1000);
+        } else {
+          statusEl.textContent = resp.msg || '登录失败'; statusEl.style.color = '#e87060';
+        }
+      })
+      .catch(function() { statusEl.textContent = '网络错误'; statusEl.style.color = '#e87060'; });
+    });
+  }
+
+  function showRegisterModal() {
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+    var modal = document.createElement('div');
+    modal.style.cssText = 'background:linear-gradient(135deg,#1a2e1f,#0d1c14);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:32px;width:min(400px,calc(100vw - 40px));color:#f3efe4;box-shadow:0 34px 110px rgba(0,0,0,0.5)';
+    modal.innerHTML =
+      '<div style="font-size:22px;font-weight:800;margin-bottom:20px;font-family:Georgia,serif">注册账号</div>' +
+      '<div style="margin-bottom:14px"><label style="display:block;font-size:13px;font-weight:700;margin-bottom:4px;color:rgba(243,239,228,0.8)">用户名</label><input id="regName" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#f3efe4;font-size:15px;outline:none" placeholder="请输入用户名" /></div>' +
+      '<div style="margin-bottom:14px"><label style="display:block;font-size:13px;font-weight:700;margin-bottom:4px;color:rgba(243,239,228,0.8)">手机号</label><input id="regPhone" type="tel" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#f3efe4;font-size:15px;outline:none" placeholder="请输入手机号" /></div>' +
+      '<div style="margin-bottom:20px"><label style="display:block;font-size:13px;font-weight:700;margin-bottom:4px;color:rgba(243,239,228,0.8)">密码</label><input id="regPwd" type="password" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#f3efe4;font-size:15px;outline:none" placeholder="密码至少6位" /></div>' +
+      '<div style="display:flex;gap:10px;margin-bottom:10px">' +
+        '<button id="regCancel" style="flex:1;padding:12px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:#f3efe4;font-weight:800;cursor:pointer">取消</button>' +
+        '<button id="regSubmit" style="flex:1;padding:12px;border-radius:999px;border:none;background:#d6b56d;color:#162015;font-weight:800;cursor:pointer">注册</button>' +
+      '</div>' +
+      '<div style="text-align:center;font-size:12px;color:rgba(243,239,228,0.5)">已有账号？<a id="gotoLogin2" style="color:#d6b56d;cursor:pointer;text-decoration:underline">去登录</a></div>' +
+      '<div id="regStatus" style="margin-top:10px;text-align:center;font-size:13px;display:none"></div>';
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+    document.getElementById('regCancel').addEventListener('click', function() { overlay.remove(); });
+    document.getElementById('gotoLogin2').addEventListener('click', function() { overlay.remove(); showLoginModal(); });
+    document.getElementById('regSubmit').addEventListener('click', function() {
+      var username = document.getElementById('regName').value.trim();
+      var phone = document.getElementById('regPhone').value.trim();
+      var password = document.getElementById('regPwd').value;
+      var statusEl = document.getElementById('regStatus');
+      statusEl.style.display = 'block';
+      if (!username || !phone || !password) { statusEl.textContent = '请填写所有字段'; statusEl.style.color = '#e87060'; return; }
+      if (!/^1[3-9]\d{9}$/.test(phone)) { statusEl.textContent = '手机号格式不正确'; statusEl.style.color = '#e87060'; return; }
+      if (password.length < 6) { statusEl.textContent = '密码至少6位'; statusEl.style.color = '#e87060'; return; }
+      statusEl.textContent = '注册中...'; statusEl.style.color = 'rgba(243,239,228,0.6)';
+      fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: username, phone: phone, password: password }) })
+      .then(function(r) { return r.json(); })
+      .then(function(resp) {
+        if (resp.code === 200) {
+          statusEl.textContent = '注册成功！正在登录...'; statusEl.style.color = '#6bcf8a';
+          return fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: username, password: password }), credentials: 'include' }).then(function(r) { return r.json(); });
+        } else {
+          statusEl.textContent = resp.msg || '注册失败'; statusEl.style.color = '#e87060';
+          throw new Error('fail');
+        }
+      })
+      .then(function() {
+        currentUser = { username: username, phone: phone };
+        localStorage.setItem('camp_user', JSON.stringify(currentUser));
+        updateAuthUI();
+        statusEl.textContent = '登录成功！';
+        setTimeout(function() { overlay.remove(); }, 1000);
+      })
+      .catch(function(err) { if (err.message !== 'fail') { statusEl.textContent = '自动登录失败'; statusEl.style.color = '#e87060'; } });
+    });
+  }
+    function initBooking() {
+      var form = document.querySelector('.booking-form');
+      if (!form) { setTimeout(initBooking, 500); return; }
+
+      // 1. 用真实营地数据替换住宿类型下拉
+      var typeSelect = form.querySelector('select');
+      // 找到住宿类型的 label（包含 select 的最后一个 label）
+      var labels = form.querySelectorAll('label');
+      var stayLabel = null;
+      for (var i = 0; i < labels.length; i++) {
+        if (labels[i].textContent.indexOf('住宿类型') >= 0 || labels[i].textContent.indexOf('Accommodation') >= 0) {
+          stayLabel = labels[i]; break;
+        }
+      }
+      // 如果没找到，取最后一个 label（按 DOM 结构，住宿类型是最后一个）
+      if (!stayLabel) stayLabel = labels[labels.length - 1];
+
+      // 从 API 获取营地数据
+      fetch(API_BASE + '/public', { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(resp) {
+          var zones = resp && resp.data && resp.data.zones ? resp.data.zones : [];
+          if (!zones.length) return;
+          // 只显示开放的营地
+          var available = zones.filter(function(z) { return z.status === '开放' || z.status === '可预订'; });
+          if (!available.length) available = zones;
+          // 替换 select 选项
+          var select = stayLabel.querySelector('select');
+          if (!select) return;
+          select.innerHTML = '';
+          available.forEach(function(zone) {
+            var opt = document.createElement('option');
+            opt.value = zone.id;
+            opt.textContent = zone.name + ' - ¥' + (zone.price || 0) + '/晚';
+            select.appendChild(opt);
+          });
+        })
+        .catch(function() { /* 静默降级，保留原有选项 */ });
+
+      // 2. 劫持 Check Availability 按钮
+      var btn = form.querySelector('.button.primary, button[type="button"]');
+      if (!btn) return;
+
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // 收集表单数据
+        var inputs = form.querySelectorAll('input[type="date"]');
+        var checkIn = inputs[0] ? inputs[0].value : '';
+        var checkOut = inputs[1] ? inputs[1].value : '';
+
+        var selects = form.querySelectorAll('select');
+        var adults = selects[0] ? parseInt(selects[0].value) || 2 : 2;
+        var children = selects[1] ? parseInt(selects[1].value) || 0 : 0;
+        var zoneId = selects[2] ? selects[2].value : '';
+        var zoneText = selects[2] ? selects[2].options[selects[2].selectedIndex].text : '';
+
+        if (!checkIn) { alert('请选择入住日期'); return; }
+        if (!zoneId) { alert('请选择住宿类型'); return; }
+
+        // 弹出姓名/手机号填写框
+        showBookingModal(checkIn, checkOut, adults + children, zoneId, zoneText);
+      });
+    }
+
+    // 3. 预订信息弹窗
+    function showBookingModal(date, leaveDate, people, zoneId, zoneText) {
+      var overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);animation:fadeIn .25s ease';
+      var modal = document.createElement('div');
+      modal.style.cssText = 'background:linear-gradient(135deg,#1a2e1f,#0d1c14);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:32px;width:min(420px,calc(100vw - 40px));color:#f3efe4;box-shadow:0 34px 110px rgba(0,0,0,0.5)';
+      modal.innerHTML =
+        '<div style="font-size:22px;font-weight:800;margin-bottom:6px;font-family:Georgia,serif">确认预订</div>' +
+        '<div style="font-size:13px;color:rgba(243,239,228,0.6);margin-bottom:20px">' + zoneText + ' · ' + date + ' · ' + people + '人</div>' +
+        '<div style="margin-bottom:14px">' +
+          '<label style="display:block;font-size:13px;font-weight:700;margin-bottom:4px;color:rgba(243,239,228,0.8)">姓名</label>' +
+          '<input id="bookName" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#f3efe4;font-size:15px;outline:none" placeholder="请输入您的姓名" />' +
+        '</div>' +
+        '<div style="margin-bottom:14px">' +
+          '<label style="display:block;font-size:13px;font-weight:700;margin-bottom:4px;color:rgba(243,239,228,0.8)">手机号</label>' +
+          '<input id="bookPhone" type="tel" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#f3efe4;font-size:15px;outline:none" placeholder="请输入手机号" />' +
+        '</div>' +
+        '<div style="margin-bottom:20px">' +
+          '<label style="display:block;font-size:13px;font-weight:700;margin-bottom:4px;color:rgba(243,239,228,0.8)">备注（选填）</label>' +
+          '<input id="bookRemark" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#f3efe4;font-size:15px;outline:none" placeholder="如有特殊要求请注明" />' +
+        '</div>' +
+        '<div style="display:flex;gap:10px">' +
+          '<button id="bookCancel" style="flex:1;padding:12px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:#f3efe4;font-weight:800;cursor:pointer">取消</button>' +
+          '<button id="bookSubmit" style="flex:1;padding:12px;border-radius:999px;border:none;background:#d6b56d;color:#162015;font-weight:800;cursor:pointer">提交预订</button>' +
+        '</div>' +
+        '<div id="bookStatus" style="margin-top:12px;text-align:center;font-size:13px;display:none"></div>';
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+
+      overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+      document.getElementById('bookCancel').addEventListener('click', function() { overlay.remove(); });
+
+      document.getElementById('bookSubmit').addEventListener('click', function() {
+        var name = document.getElementById('bookName').value.trim();
+        var phone = document.getElementById('bookPhone').value.trim();
+        var remark = document.getElementById('bookRemark').value.trim();
+        if (!name) { alert('请输入姓名'); return; }
+        if (!phone || !/^1\d{10}$/.test(phone)) { alert('请输入正确的11位手机号'); return; }
+
+        var statusEl = document.getElementById('bookStatus');
+        statusEl.style.display = 'block';
+        statusEl.textContent = '提交中...';
+        statusEl.style.color = 'rgba(243,239,228,0.6)';
+
+        fetch(API_BASE + '/bookings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            phone: phone,
+            zone: zoneText.split(' - ')[0],
+            date: date,
+            people: people,
+            remark: remark
+          })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(resp) {
+          if (resp.code === 200 || resp.code === 201) {
+            statusEl.textContent = '✅ 预订成功！后台管理员将尽快确认';
+            statusEl.style.color = '#6bcf8a';
+            setTimeout(function() { overlay.remove(); }, 2000);
+          } else {
+            statusEl.textContent = '❌ ' + (resp.msg || '提交失败，请重试');
+            statusEl.style.color = '#e87060';
+          }
+        })
+        .catch(function(err) {
+          statusEl.textContent = '❌ 网络错误，请稍后重试';
+          statusEl.style.color = '#e87060';
+        });
+      });
+    }
+
+    // 启动
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() { updateAuthUI(); setTimeout(initBooking, 200); });
+    } else {
+      initBooking();
+    }
+  })();
+  </script></body>
 </html>

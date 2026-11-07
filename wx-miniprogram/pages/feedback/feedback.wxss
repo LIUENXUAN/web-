@@ -1,0 +1,84 @@
+.page {
+  padding: 0 32rpx 120rpx;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  padding: 50rpx 0 32rpx;
+}
+
+.header-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #f3efe4;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.header-desc {
+  font-size: 24rpx;
+  color: #8fa96f;
+  display: block;
+}
+
+.form-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24rpx;
+  padding: 28rpx;
+}
+
+.form-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  color: #f3efe4;
+  margin-bottom: 16rpx;
+}
+
+.form-input::placeholder {
+  color: rgba(243, 239, 228, 0.4);
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 200rpx;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  color: #f3efe4;
+  line-height: 1.6;
+}
+
+.form-textarea::placeholder {
+  color: rgba(243, 239, 228, 0.4);
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 22rpx;
+  color: #5a724a;
+  margin-top: 10rpx;
+}
+
+.btn-primary {
+  width: 100%;
+  background: #6bcf8a;
+  color: #fff;
+  border: none;
+  border-radius: 16rpx;
+  padding: 22rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  margin-top: 24rpx;
+}

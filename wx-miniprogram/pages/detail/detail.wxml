@@ -1,0 +1,45 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="loading"><text>加载中...</text></view>
+
+  <view wx:else class="detail-wrap">
+    <view class="hero-card">
+      <view class="hero-top">
+        <text class="hero-title">{{activity.title}}</text>
+        <view class="status-tag status-{{activity.status == '报名中' ? 'open' : (activity.status == '已满员' ? 'full' : 'closed')}}">
+          <text>{{activity.status}}</text>
+        </view>
+      </view>
+      <view class="hero-meta">
+        <text>📅 {{activity.date}}</text>
+        <text>📍 {{activity.zone}}</text>
+      </view>
+      <view class="progress-wrap">
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{activity.quota > 0 ? (activity.joined / activity.quota * 100) : 0}}%"></view>
+        </view>
+        <text class="progress-text">{{activity.joined}}/{{activity.quota}} 人已报名</text>
+      </view>
+    </view>
+
+    <view class="desc-card">
+      <text class="desc-label">活动介绍</text>
+      <text class="desc-content">{{activity.description || '暂无详细介绍'}}</text>
+    </view>
+
+    <view class="form-card" wx:if="{{activity.status == '报名中' && activity.joined < activity.quota && !signedUp}}">
+      <text class="form-title">立即报名</text>
+      <input class="form-input" placeholder="请输入姓名" value="{{formName}}" bindinput="onNameInput" />
+      <input class="form-input" type="number" placeholder="请输入手机号" value="{{formPhone}}" bindinput="onPhoneInput" maxlength="11" />
+      <button class="btn-primary" bindtap="doSignup" loading="{{submitting}}">确认报名</button>
+    </view>
+
+    <view wx:elif="{{signedUp}}" class="status-card">
+      <text>✅ 您已报名该活动</text>
+      <button class="btn-cancel" bindtap="doCancel">取消报名</button>
+    </view>
+
+    <view wx:else class="status-card">
+      <text>{{activity.status == '已满员' ? '❌ 活动已满员' : '⏰ 活动已结束'}}</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nature Haven Camp 报名定位图</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Inter","Microsoft YaHei",sans-serif; background:#0d1f14; color:#d0e0d8; padding:32px 20px; }
+  .wrap { max-width:960px; margin:0 auto; }
+  h1 { text-align:center; font-size:26px; color:#6bcf8a; margin-bottom:4px; letter-spacing:1px; }
+  .sub { text-align:center; color:#80a898; font-size:13px; margin-bottom:28px; }
+  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+  .card { background:rgba(255,255,255,.04); border:1px solid rgba(107,207,138,.25); border-radius:12px; padding:18px 14px; }
+  .card .k { font-size:12px; color:#6bcf8a; margin-bottom:10px; letter-spacing:2px; }
+  .card .v { font-size:14px; line-height:1.7; color:#e8f5ef; }
+  .card .v b { color:#6bcf8a; }
+  .flow { background:rgba(255,255,255,.04); border:1px solid rgba(107,207,138,.25); border-radius:12px; padding:20px; margin-bottom:24px; }
+  .flow h2 { font-size:14px; color:#6bcf8a; margin-bottom:16px; letter-spacing:2px; }
+  .steps { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+  .step { background:rgba(107,207,138,.08); border:1px solid rgba(107,207,138,.3); border-radius:8px; padding:12px 10px; text-align:center; }
+  .step .n { font-size:11px; color:#80a898; margin-bottom:6px; }
+  .step .t { font-size:13px; color:#e8f5ef; font-weight:600; }
+  .step .d { font-size:11px; color:#80a898; margin-top:6px; line-height:1.5; }
+  .bar { display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.04); border:1px solid rgba(107,207,138,.25); border-radius:12px; padding:18px 20px; }
+  .bar .lbl { font-size:12px; color:#6bcf8a; letter-spacing:2px; white-space:nowrap; }
+  .bar .track { flex:1; }
+  .bar .row { display:flex; align-items:center; gap:10px; margin:7px 0; }
+  .bar .row .name { width:110px; font-size:12px; color:#e8f5ef; }
+  .bar .row .fill { height:16px; background:linear-gradient(90deg,#3d7a4a,#6bcf8a); border-radius:4px; }
+  .bar .row .pct { font-size:12px; color:#80a898; width:40px; text-align:right; }
+  .foot { text-align:center; font-size:12px; color:#5a7a6c; margin-top:20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Nature Haven Camp · 智慧营地数字孪生运营平台</h1>
+  <p class="sub">大学生创业项目报名定位图 — 给谁 / 解决什么 / 凭什么 / 怎么赚钱</p>
+
+  <div class="grid">
+    <div class="card"><div class="k">目标客户</div><div class="v">中小型营地、景区、研学基地的<b>运营管理方</b></div></div>
+    <div class="card"><div class="k">核心痛点</div><div class="v">预约靠电话表格、容量靠经验、巡检靠纸质、<b>数据孤岛</b>、无可视化</div></div>
+    <div class="card"><div class="k">解决方案</div><div class="v"><b>3D数字孪生</b> + 全栈自研：游客端、运营后台、决策指挥舱三端数据闭环</div></div>
+    <div class="card"><div class="k">商业模式</div><div class="v">SaaS 年费订阅 + 3D 建模/定制开发增值 + 活动运营分成</div></div>
+  </div>
+
+  <div class="flow">
+    <h2>业务数据闭环（报名表"项目内容"一页讲清）</h2>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><div class="t">游客端</div><div class="d">小程序 + 网页：活动浏览 · 在线预约 · 报名 · 反馈</div></div>
+      <div class="step"><div class="n">02</div><div class="t">3D 展示</div><div class="d">营地数字孪生模型 · 沉浸式空间预览</div></div>
+      <div class="step"><div class="n">03</div><div class="t">运营后台</div><div class="d">10 大管理模块 · 订单/区域/资产/巡检/告警 CRUD</div></div>
+      <div class="step"><div class="n">04</div><div class="t">指挥舱</div><div class="d">实时数据看板 · 经营指标 · 决策支持</div></div>
+      <div class="step"><div class="n">05</div><div class="t">管理闭环</div><div class="d">游客→订单→运营→复盘，全链路可追踪</div></div>
+    </div>
+  </div>
+
+  <div class="bar">
+    <div class="lbl">技术完成度</div>
+    <div class="track">
+      <div class="row"><div class="name">后端 API</div><div class="fill" style="width:95%"></div><div class="pct">95%</div></div>
+      <div class="row"><div class="name">后台管理 SPA</div><div class="fill" style="width:90%"></div><div class="pct">90%</div></div>
+      <div class="row"><div class="name">游客端小程序</div><div class="fill" style="width:70%"></div><div class="pct">70%</div></div>
+      <div class="row"><div class="name">3D 数字孪生</div><div class="fill" style="width:80%"></div><div class="pct">80%</div></div>
+      <div class="row"><div class="name">商用化改造</div><div class="fill" style="width:60%"></div><div class="pct">60%</div></div>
+    </div>
+  </div>
+
+  <p class="foot">填写口径：如实标注"已实现/开发中"，创意组按原型完成度讲述，初创组按试点运营讲述</p>
+</div>
+</body>
+</html>

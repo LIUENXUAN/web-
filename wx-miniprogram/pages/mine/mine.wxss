@@ -1,0 +1,144 @@
+.page {
+  padding: 0 32rpx 120rpx;
+  min-height: 100vh;
+}
+
+.user-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24rpx;
+  padding: 32rpx 28rpx;
+  margin: 40rpx 0 24rpx;
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: #6bcf8a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.user-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #f3efe4;
+}
+
+.user-desc {
+  font-size: 22rpx;
+  color: #8fa96f;
+}
+
+.login-btn {
+  background: #6bcf8a;
+  color: #fff;
+  border: none;
+  border-radius: 16rpx;
+  padding: 12rpx 24rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.menu-list {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20rpx;
+  overflow: hidden;
+  margin-bottom: 32rpx;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 20rpx;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-icon {
+  font-size: 32rpx;
+  margin-right: 16rpx;
+}
+
+.menu-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: #f3efe4;
+  font-weight: 500;
+}
+
+.menu-arrow {
+  font-size: 32rpx;
+  color: #5a724a;
+}
+
+.section-title {
+  margin: 0 0 20rpx;
+}
+
+.section-title text {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #f3efe4;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 80rpx 0;
+  color: #5a724a;
+  font-size: 28rpx;
+}
+
+.signup-list {
+  display: block;
+}
+
+.signup-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.signup-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.signup-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #f3efe4;
+}
+
+.signup-phone {
+  font-size: 22rpx;
+  color: rgba(243, 239, 228, 0.6);
+}
+
+.signup-time {
+  font-size: 22rpx;
+  color: #8fa96f;
+}

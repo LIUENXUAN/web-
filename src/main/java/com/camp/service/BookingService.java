@@ -41,16 +41,29 @@ public class BookingService {
         return bookings.findAllByOrderByCreatedAtDesc(pageable);
     }
 
+    public Page<Booking> listWithFilters(String keyword, String status, Pageable pageable) {
+        if ((keyword == null || keyword.isBlank()) && (status == null || status.isBlank())) {
+            return bookings.findAllByOrderByCreatedAtDesc(pageable);
+        }
+        String kw = (keyword == null || keyword.isBlank()) ? null : keyword.trim();
+        String st = (status == null || status.isBlank()) ? null : status.trim();
+        return bookings.findByFilters(kw, st, pageable);
+    }
+
     public Optional<Booking> updateStatus(String id, String status, String operator) {
         return bookings.findById(id).map(booking -> {
             String oldStatus = booking.getStatus();
             booking.setStatus(status);
             Booking saved = bookings.save(booking);
-            // 记录操作日志
-            OperationLog log = new OperationLog(null, operator, "更新预订状态",
-                "Booking", id, oldStatus + " → " + status, LocalDateTime.now());
-            logs.save(log);
+            logs.save(new OperationLog(null, operator, "更新预订状态",
+                "Booking", id, oldStatus + " → " + status, LocalDateTime.now()));
             return saved;
         });
+    }
+
+    public void delete(String id, String operator) {
+        bookings.deleteById(id);
+        logs.save(new OperationLog(null, operator, "删除预订",
+            "Booking", id, "已删除", LocalDateTime.now()));
     }
 }

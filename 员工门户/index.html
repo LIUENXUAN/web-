@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>营地公园 · 员工端</title>
+<style>
+/* ============================================================
+   CampOS 员工门户 · Dark Premium Overhaul
+   OLED dark + green accent + glassmorphism + micro-interactions
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg-deep: #030806;
+  --bg-surface: #070f0b;
+  --bg-elevated: #0b1812;
+  --bg-card: rgba(11, 24, 18, 0.92);
+  --bg-glass: rgba(11, 24, 18, 0.75);
+  --bg-hover: rgba(107, 207, 138, 0.06);
+  --bg-active: rgba(107, 207, 138, 0.10);
+  --accent: #6bcf8a;
+  --accent-dim: rgba(107, 207, 138, 0.12);
+  --accent-glow: rgba(107, 207, 138, 0.25);
+  --text: #e0f0e8;
+  --text-secondary: #90b8a8;
+  --text-muted: #5a7a6a;
+  --danger: #e87060;
+  --warning: #d4952a;
+  --success: #4a9e5e;
+  --radius: 10px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 48px rgba(0,0,0,0.6);
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg-deep);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === AMBIENT GLOW BG === */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 60% 35% at 50% 0%, rgba(61, 122, 74, 0.10), transparent 70%),
+    radial-gradient(ellipse 25% 25% at 80% 90%, rgba(107, 207, 138, 0.05), transparent 60%),
+    radial-gradient(ellipse 20% 20% at 20% 70%, rgba(61, 122, 74, 0.04), transparent 50%);
+  pointer-events: none;
+}
+
+/* ===== LOGIN PAGE ===== */
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse 120% 35% at 50% 10%, rgba(61, 122, 74, 0.15), transparent 60%),
+    radial-gradient(ellipse 50% 50% at 85% 85%, rgba(107, 207, 138, 0.06), transparent 50%),
+    var(--bg-deep);
+}
+
+.login-card {
+  width: 420px;
+  max-width: 92vw;
+  padding: 52px 44px;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(107, 207, 138, 0.06);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(107, 207, 138, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.login-card h1 {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #e0f0e8 30%, #6bcf8a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.login-card .sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+  letter-spacing: 0.02em;
+}
+
+.login-card .form-group { margin-bottom: 22px; }
+
+.login-card label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 7px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 13px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(107, 207, 138, 0.06);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: all 200ms var(--ease);
+}
+
+.login-card input:focus {
+  border-color: rgba(107, 207, 138, 0.25);
+  box-shadow: 0 0 0 4px rgba(107, 207, 138, 0.06);
+}
+
+.login-card input::placeholder { color: var(--text-muted); }
+
+.login-card .btn-login {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, #3d7a4a 0%, #2e8a4a 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+  letter-spacing: 0.04em;
+  transition: all 200ms var(--ease);
+}
+
+.login-card .btn-login:hover {
+  background: linear-gradient(135deg, #4a8a5a 0%, #3a9a5a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(107, 207, 138, 0.25);
+}
+
+.login-card .btn-login:active { transform: translateY(0); box-shadow: none; }
+.login-card .btn-login:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+.login-card .error { color: var(--danger); font-size: 13px; margin-top: 16px; text-align: center; }
+
+/* ===== APP LAYOUT ===== */
+.app-layout {
+  display: flex;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-glass);
+  border-right: 1px solid rgba(107, 207, 138, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+}
+
+.sidebar-brand {
+  padding: 24px 22px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid rgba(107, 207, 138, 0.04);
+}
+
+.sidebar-brand .mark {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, #6bcf8a 0%, #3a9a5a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 17px;
+  color: #030806;
+  box-shadow: 0 2px 12px rgba(107, 207, 138, 0.3);
+}
+
+.sidebar-brand strong {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 10px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  border-radius: var(--radius);
+  position: relative;
+  transition: all 180ms var(--ease);
+  margin-bottom: 2px;
+}
+
+.nav-item:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.nav-item.active {
+  background: var(--bg-active);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+  box-shadow: 0 0 10px rgba(107, 207, 138, 0.5);
+}
+
+.sidebar-footer {
+  padding: 18px 18px;
+  border-top: 1px solid rgba(107, 207, 138, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-footer .avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(107, 207, 138, 0.2), rgba(107, 207, 138, 0.05));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.sidebar-footer .info { flex: 1; min-width: 0; }
+.sidebar-footer .name { font-size: 13px; color: var(--text); font-weight: 500; }
+.sidebar-footer .role { font-size: 11px; color: var(--text-muted); }
+
+.sidebar-footer .logout {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px 8px;
+  font-size: 16px;
+  border-radius: 8px;
+  transition: all 180ms var(--ease);
+}
+
+.sidebar-footer .logout:hover {
+  color: var(--danger);
+  background: rgba(232, 112, 96, 0.08);
+}
+
+/* ===== MAIN AREA ===== */
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-surface);
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 36px;
+  border-bottom: 1px solid rgba(107, 207, 138, 0.04);
+  background: rgba(7, 15, 11, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.top-bar h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 36px;
+}
+
+/* ===== DATA TABLE ===== */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(107, 207, 138, 0.04);
+  overflow: hidden;
+}
+
+.data-table thead { position: sticky; top: 0; z-index: 2; }
+
+.data-table th {
+  text-align: left;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(107, 207, 138, 0.06);
+  color: var(--text-muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  background: rgba(7, 15, 11, 0.9);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.data-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.data-table tbody tr { transition: background 150ms var(--ease); }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover td { background: var(--bg-hover); }
+.data-table tbody tr:nth-child(even) td { background: rgba(255, 255, 255, 0.01); }
+.data-table tbody tr:nth-child(even):hover td { background: rgba(107, 207, 138, 0.06); }
+
+/* ===== BADGES ===== */
+.status-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.status-open { background: rgba(74, 158, 94, 0.08); color: #4a9e5e; border: 1px solid rgba(74, 158, 94, 0.12); }
+.status-closed { background: rgba(212, 149, 42, 0.08); color: #d4952a; border: 1px solid rgba(212, 149, 42, 0.12); }
+.status-full { background: rgba(232, 112, 96, 0.08); color: #e87060; border: 1px solid rgba(232, 112, 96, 0.12); }
+.status-done { background: rgba(138, 154, 138, 0.08); color: #8a9a8a; border: 1px solid rgba(138, 154, 138, 0.12); }
+.level-high { background: rgba(232, 112, 96, 0.08); color: #e87060; border: 1px solid rgba(232, 112, 96, 0.12); }
+.level-mid { background: rgba(212, 149, 42, 0.08); color: #d4952a; border: 1px solid rgba(212, 149, 42, 0.12); }
+.level-low { background: rgba(74, 158, 94, 0.08); color: #4a9e5e; border: 1px solid rgba(74, 158, 94, 0.12); }
+
+/* ===== BUTTONS ===== */
+.btn {
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 180ms var(--ease);
+}
+
+.btn:active { transform: scale(0.95); }
+
+.btn-primary {
+  background: linear-gradient(135deg, #3d7a4a 0%, #2e8a4a 100%);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #4a8a5a 0%, #3a9a5a 100%);
+  box-shadow: 0 4px 16px rgba(107, 207, 138, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-success { background: rgba(74, 158, 94, 0.08); color: var(--success); border: 1px solid rgba(74, 158, 94, 0.12); }
+.btn-success:hover { background: rgba(74, 158, 94, 0.16); }
+
+.btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid rgba(255, 255, 255, 0.04); }
+.btn-ghost:hover { background: rgba(255, 255, 255, 0.03); color: var(--text); }
+
+.btn-sm { padding: 6px 14px; font-size: 11px; }
+.btn-xs { padding: 4px 10px; font-size: 10px; border-radius: 6px; }
+
+.btn-warning { background: rgba(212, 149, 42, 0.08); color: var(--warning); border: 1px solid rgba(212, 149, 42, 0.12); }
+.btn-warning:hover { background: rgba(212, 149, 42, 0.16); }
+
+/* ===== FILTER BAR ===== */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+/* ===== PAGE HEADER ===== */
+.page-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.page-header-bar .count { font-size: 12px; color: var(--text-muted); }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: fadeIn 200ms ease-out;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-box {
+  width: 540px;
+  max-width: 92vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(107, 207, 138, 0.06);
+  box-shadow: var(--shadow-lg);
+  padding: 0;
+  animation: modalIn 300ms var(--ease);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 30px 20px;
+  border-bottom: 1px solid rgba(107, 207, 138, 0.04);
+}
+
+.modal-header h3 { font-size: 18px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 180ms var(--ease);
+}
+
+.modal-close:hover { background: rgba(232, 112, 96, 0.1); color: var(--danger); }
+
+.modal-body { padding: 24px 30px; }
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px 30px 24px;
+  border-top: 1px solid rgba(107, 207, 138, 0.04);
+}
+
+/* ===== FORMS ===== */
+.form-group { margin-bottom: 18px; }
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 7px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 11px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(107, 207, 138, 0.06);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  transition: all 200ms var(--ease);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: rgba(107, 207, 138, 0.25);
+  box-shadow: 0 0 0 4px rgba(107, 207, 138, 0.05);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder { color: var(--text-muted); }
+
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+.form-row { display: flex; gap: 14px; }
+.form-row .form-group { flex: 1; }
+
+/* ===== HEALTH BAR ===== */
+.health-bar { display: flex; align-items: center; gap: 8px; }
+
+.health-bar .bar {
+  width: 68px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.health-bar .fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 600ms var(--ease);
+}
+
+.health-bar .val { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+
+/* ===== LOADING ===== */
+.loading {
+  text-align: center;
+  padding: 100px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.loading .spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(107, 207, 138, 0.06);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== EMPTY ===== */
+.empty { text-align: center; padding: 60px; color: var(--text-muted); font-size: 13px; }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed;
+  top: 28px;
+  right: 28px;
+  z-index: 99999;
+  padding: 14px 24px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  max-width: 380px;
+  animation: toastIn 300ms var(--ease);
+  box-shadow: var(--shadow);
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.toast-success { background: rgba(74, 158, 94, 0.12); border: 1px solid rgba(74, 158, 94, 0.2); color: var(--accent); }
+.toast-error { background: rgba(232, 112, 96, 0.12); border: 1px solid rgba(232, 112, 96, 0.2); color: var(--danger); }
+
+/* ===== SCROLLBAR ===== */
+.page-content::-webkit-scrollbar { width: 4px; }
+.page-content::-webkit-scrollbar-track { background: transparent; }
+.page-content::-webkit-scrollbar-thumb { background: rgba(107, 207, 138, 0.06); border-radius: 2px; }
+.page-content::-webkit-scrollbar-thumb:hover { background: rgba(107, 207, 138, 0.12); }
+
+/* ===== MISC ===== */
+::selection { background: rgba(107, 207, 138, 0.2); color: var(--text); }
+:focus-visible { outline: 2px solid rgba(107, 207, 138, 0.35); outline-offset: 2px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .sidebar { width: 200px; }
+  .page-content { padding: 20px; }
+  .top-bar { padding: 14px 20px; }
+  .data-table { font-size: 12px; }
+  .data-table th, .data-table td { padding: 12px 14px; }
+}
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+  var API = "";
+    var savedUser = sessionStorage.getItem("emp_user");
+    if (savedUser) { try { state.user = JSON.parse(savedUser); } catch(e) {} }
+  var app = document.getElementById("app");
+  if (!app) { document.write("Error: #app not found"); return; }
+
+  function h(tag, attrs) {
+    var children = Array.prototype.slice.call(arguments, 2);
+    var el = document.createElement(tag);
+    if (attrs) {
+      for (var k in attrs) {
+        if (k === "className") el.className = attrs[k];
+        else if (k === "style" && typeof attrs[k] === "object") { for (var sk in attrs[k]) el.style[sk] = attrs[k][sk]; }
+        else if (k.indexOf("on") === 0) el.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
+        else if (k === "disabled") el.disabled = !!attrs[k];
+        else if (k === "value" || k === "defaultValue") el.value = attrs[k];
+        else el.setAttribute(k, attrs[k]);
+      }
+    }
+    for (var i = 0; i < children.length; i++) {
+      var c = children[i];
+      if (c == null || c === false || c === true) continue;
+      if (Array.isArray(c)) { for (var j = 0; j < c.length; j++) { if (c[j] != null) el.appendChild(typeof c[j] === "string" ? document.createTextNode(c[j]) : c[j]); } }
+      else el.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+    }
+    return el;
+  }
+
+  function toast(msg, type) {
+    type = type || "success";
+    var t = h("div", { className: "toast toast-" + type }, msg);
+    document.body.appendChild(t);
+    setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 3000);
+  }
+
+  function api(path, opts) {
+    opts = opts || {};
+    return fetch(API + path, {
+      method: opts.method || "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: opts.body || undefined
+    }).then(function(r) {
+      if (!r.ok) throw new Error("Request failed: " + r.status);
+      return r.json();
+    }).then(function(j) {
+      if (j.code !== 200) throw new Error(j.msg || "Request failed");
+      return j.data;
+    });
+  }
+
+  function statusBadge(s) {
+    var cls = "status-badge ";
+    if (s === "正常" || s === "已确认" || s === "已完成" || s === "已关闭" || s === "已处理") cls += "status-open";
+    else if (s === "待处理" || s === "待执行" || s === "待确认") cls += "status-closed";
+    else if (s === "故障" || s === "已取消") cls += "status-full";
+    else if (s === "维护中" || s === "进行中") cls += "status-closed";
+    else cls += "status-done";
+    return h("span", { className: cls }, s || "-");
+  }
+
+  function levelBadge(l) {
+    var cls = "status-badge ";
+    if (l === "高" || l === "紧急") cls += "level-high";
+    else if (l === "中") cls += "level-mid";
+    else cls += "level-low";
+    return h("span", { className: cls }, l || "-");
+  }
+
+  function healthBar(v) {
+    v = v || 0;
+    var color = v >= 80 ? "#4a9e5e" : v >= 50 ? "#d4952a" : "#e87060";
+    return h("div", { className: "health-bar" },
+      h("div", { className: "bar" }, h("div", { className: "fill", style: { width: v + "%", background: color } })),
+      h("span", { className: "val" }, v + "%")
+    );
+  }
+
+  function fmtDate(d) { if (!d) return "-"; return d.substring(0, 10); }
+  function fmtDateTime(d) { if (!d) return "-"; return d.substring(0, 16).replace("T", " "); }
+
+  var state = { user: null, page: "assets" };
+  var assetsState = { data: null, modal: null, form: {} };
+  var inspState = { data: null, modal: null, form: {}, detail: null };
+  var alertState = { data: null, modal: null, form: {}, detail: null };
+  function showLogin() {
+    app.innerHTML = "";
+    app.appendChild(
+      h("div", { className: "login-page" },
+        h("div", { className: "login-card" },
+          h("h1", null, "员工端"),
+          h("div", { className: "sub" }, "营地公园管理系统 · 员工入口"),
+          h("div", { className: "form-group" },
+            h("label", null, "用户名"),
+            h("input", { id: "login-user", type: "text", placeholder: "请输入用户名" })
+          ),
+          h("div", { className: "form-group" },
+            h("label", null, "密码"),
+            h("input", { id: "login-pass", type: "password", placeholder: "请输入密码" })
+          ),
+          h("button", { className: "btn-login", id: "login-btn", onClick: doLogin }, "登 录"),
+          h("div", { className: "error", id: "login-error" })
+        )
+      )
+    );
+    document.getElementById("login-pass").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") doLogin();
+    });
+  }
+
+  function doLogin() {
+    var user = document.getElementById("login-user").value.trim();
+    var pass = document.getElementById("login-pass").value.trim();
+    var btn = document.getElementById("login-btn");
+    var err = document.getElementById("login-error");
+    if (!user || !pass) { err.textContent = "请输入用户名和密码"; return; }
+    btn.disabled = true; btn.textContent = "登录中..."; err.textContent = "";
+    api("/api/login", { method: "POST", body: JSON.stringify({ username: user, password: pass }) })
+      .then(function(u) { if (u.role !== "EMPLOYEE") { throw new Error("该账号无员工权限"); } state.user = { username: u.username, displayName: u.displayName || u.username, role: u.role }; sessionStorage.setItem("emp_user", JSON.stringify(state.user)); showApp(); })
+      .catch(function(e) { err.textContent = "登录失败: " + e.message; btn.disabled = false; btn.textContent = "登 录"; });
+  }
+
+  function showApp() {
+    app.innerHTML = "";
+    var layout = h("div", { className: "app-layout" });
+    var sidebar = h("div", { className: "sidebar" });
+    sidebar.appendChild(h("div", { className: "sidebar-brand" }, h("div", { className: "mark" }, "E"), h("strong", null, "员工工作台")));
+    var nav = h("div", { className: "sidebar-nav" });
+    var pages = [
+      { id: "assets", icon: "🔧", label: "资产管理" },
+      { id: "inspections", icon: "📋", label: "巡检管理" },
+      { id: "alerts", icon: "🔔", label: "告警管理" }
+    ];
+    for (var pi = 0; pi < pages.length; pi++) {
+      (function(p) {
+        nav.appendChild(h("button", {
+          className: "nav-item" + (state.page === p.id ? " active" : ""),
+          onClick: function() { state.page = p.id; showPage(); }
+        }, h("span", null, p.icon), h("span", null, p.label)));
+      })(pages[pi]);
+    }
+    sidebar.appendChild(nav);
+    var sfooter = h("div", { className: "sidebar-footer" });
+    sfooter.appendChild(h("div", { className: "avatar" }, (state.user.displayName || state.user.username || "U").charAt(0)));
+    sfooter.appendChild(h("div", { className: "info" },
+      h("div", { className: "name" }, state.user.displayName || state.user.username || "员工"),
+      h("div", { className: "role" }, "员工")
+    ));
+    sfooter.appendChild(h("button", { className: "logout", onClick: function() {
+      api("/api/logout", { method: "POST" }).then(function() { state.user = null; sessionStorage.removeItem("emp_user"); showLogin(); }).catch(function() { state.user = null; sessionStorage.removeItem("emp_user"); showLogin(); });
+    } }, "🚪"));
+    sidebar.appendChild(sfooter);
+    layout.appendChild(sidebar);
+    var main = h("div", { className: "main-area" });
+    var topBar = h("div", { className: "top-bar" });
+    topBar.appendChild(h("h2", { id: "page-title" }, "资产管理"));
+    main.appendChild(topBar);
+    main.appendChild(h("div", { className: "page-content", id: "page-content" }));
+    layout.appendChild(main);
+    app.appendChild(layout);
+    showPage();
+  }
+
+  function showPage() {
+    var titleEl = document.getElementById("page-title");
+    var titles = { assets: "资产管理", inspections: "巡检管理", alerts: "告警管理" };
+    if (titleEl) titleEl.textContent = titles[state.page] || "员工工作台";
+    if (state.page === "assets") renderAssets();
+    else if (state.page === "inspections") renderInspections();
+    else if (state.page === "alerts") renderAlerts();
+  }
+  function renderAssets() {
+    var content = document.getElementById("page-content");
+    if (!content) return;
+    content.innerHTML = "<div class=\"loading\"><div class=\"spinner\"></div>加载中...</div>";
+    api("/api/employee/assets").then(function(data) { assetsState.data = data; renderAssetsContent(content); }).catch(function(err) { content.innerHTML = "<div class=\"empty\">加载失败: " + err.message + "</div>"; });
+  }
+
+  function renderAssetsContent(content) {
+    var data = assetsState.data || [];
+    content.innerHTML = "";
+    content.appendChild(h("div", { className: "filter-bar" },
+      h("button", { className: "btn btn-primary btn-sm", onClick: function() {
+        assetsState.form = { name: "", zone: "", type: "设备", status: "正常", priority: "中", health: 100, owner: "" };
+        assetsState.modal = "new"; showAssetsModal();
+      } }, "+ 新增资产"),
+      h("button", { className: "btn btn-ghost btn-sm", onClick: function() { renderAssets(); } }, "🔄 刷新")
+    ));
+    content.appendChild(h("div", { className: "page-header-bar" }, h("span", { className: "count" }, "共 " + data.length + " 项资产")));
+    if (data.length === 0) { content.appendChild(h("div", { className: "empty" }, "暂无资产数据")); return; }
+    var table = h("table", { className: "data-table" });
+    table.appendChild(h("thead", null, h("tr", null, h("th", null, "名称"), h("th", null, "区域"), h("th", null, "类型"), h("th", null, "优先级"), h("th", null, "健康度"), h("th", null, "状态"), h("th", null, "操作"))));
+    var tbody = h("tbody");
+    for (var i = 0; i < data.length; i++) {
+      (function(a) {
+        tbody.appendChild(h("tr", null,
+          h("td", null, a.name || "-"), h("td", null, a.zone || "-"), h("td", null, a.type || "-"),
+          h("td", null, levelBadge(a.priority)), h("td", null, healthBar(a.health || 0)), h("td", null, statusBadge(a.status)),
+          h("td", { style: { whiteSpace: "nowrap" } },
+            h("button", { className: "btn btn-xs", style: { background: "rgba(107,143,94,0.2)", color: "#6b8f5e", border: "1px solid rgba(107,143,94,0.3)", marginRight: 4 }, onClick: function() { assetsState.form = { name: a.name, zone: a.zone, type: a.type, status: a.status, priority: a.priority, health: a.health, owner: a.owner, id: a.id }; assetsState.modal = "edit"; showAssetsModal(); } }, "编辑"),
+            a.status === "正常" ? h("button", { className: "btn btn-xs btn-warning", style: { marginRight: 4 }, onClick: function() { updateAsset(a.id, "故障", a.health); } }, "报故障") : h("button", { className: "btn btn-xs btn-success", style: { marginRight: 4 }, onClick: function() { updateAsset(a.id, "正常", a.health); } }, "恢复")
+          )
+        ));
+      })(data[i]);
+    }
+    table.appendChild(tbody);
+    content.appendChild(table);
+  }
+
+  function updateAsset(id, status, health) {
+    api("/api/employee/assets/" + id + "/status", { method: "PUT", body: JSON.stringify({ status: status, health: health }) })
+      .then(function() { toast("状态已更新"); renderAssets(); })
+      .catch(function(err) { toast(err.message, "error"); });
+  }
+
+  function showAssetsModal() {
+    var existing = document.getElementById("assets-modal");
+    if (existing) existing.remove();
+    var form = assetsState.form;
+    var isNew = assetsState.modal === "new";
+    var overlay = h("div", { className: "modal-overlay", id: "assets-modal", onClick: function() { assetsState.modal = null; overlay.remove(); } });
+    var box = h("div", { className: "modal-box", onClick: function(e) { e.stopPropagation(); } });
+    box.appendChild(h("div", { className: "modal-header" }, h("h3", null, isNew ? "新增资产" : "编辑资产"), h("button", { className: "modal-close", onClick: function() { assetsState.modal = null; overlay.remove(); } }, "✕")));
+    var body = h("div", { className: "modal-body" });
+    body.appendChild(h("div", { className: "form-group" }, h("label", null, "名称"), h("input", { id: "af-name", value: form.name || "", placeholder: "资产名称" })));
+    body.appendChild(h("div", { className: "form-row" },
+      h("div", { className: "form-group" }, h("label", null, "所属区域"), h("input", { id: "af-zone", value: form.zone || "", placeholder: "如: 星空营地" })),
+      h("div", { className: "form-group" }, h("label", null, "类型"), h("select", { id: "af-type" }, h("option", { value: "设备" }, "设备"), h("option", { value: "设施" }, "设施"), h("option", { value: "车辆" }, "车辆"), h("option", { value: "工具" }, "工具")))
+    ));
+    body.appendChild(h("div", { className: "form-row" },
+      h("div", { className: "form-group" }, h("label", null, "优先级"), h("select", { id: "af-priority" }, h("option", { value: "高" }, "高"), h("option", { value: "中" }, "中"), h("option", { value: "低" }, "低"))),
+      h("div", { className: "form-group" }, h("label", null, "健康度 (0-100)"), h("input", { id: "af-health", type: "number", min: 0, max: 100, value: form.health || 100 }))
+    ));
+    body.appendChild(h("div", { className: "form-row" },
+      h("div", { className: "form-group" }, h("label", null, "负责人"), h("input", { id: "af-owner", value: form.owner || "", placeholder: "负责人姓名" })),
+      h("div", { className: "form-group" }, h("label", null, "状态"), h("select", { id: "af-status" }, h("option", { value: "正常" }, "正常"), h("option", { value: "维护中" }, "维护中"), h("option", { value: "故障" }, "故障")))
+    ));
+    box.appendChild(body);
+    var footer = h("div", { className: "modal-footer" });
+    footer.appendChild(h("button", { className: "btn btn-ghost", onClick: function() { assetsState.modal = null; overlay.remove(); } }, "取消"));
+    footer.appendChild(h("button", { className: "btn btn-primary", onClick: function() { saveAsset(); } }, isNew ? "创建" : "保存"));
+    box.appendChild(footer);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  }
+
+  function saveAsset() {
+    var form = {
+      name: document.getElementById("af-name").value.trim(),
+      zone: document.getElementById("af-zone").value.trim(),
+      type: document.getElementById("af-type").value,
+      priority: document.getElementById("af-priority").value,
+      health: parseInt(document.getElementById("af-health").value) || 100,
+      owner: document.getElementById("af-owner").value.trim(),
+      status: document.getElementById("af-status").value
+    };
+    if (!form.name) { toast("请输入资产名称", "error"); return; }
+    var isNew = assetsState.modal === "new";
+    var url = isNew ? "/api/employee/assets" : "/api/employee/assets/" + assetsState.form.id + "/status";
+    var method = isNew ? "POST" : "PUT";
+    var body = isNew ? JSON.stringify(form) : JSON.stringify({ status: form.status, health: form.health });
+    api(url, { method: method, body: body }).then(function() {
+      toast(isNew ? "资产已创建" : "资产已更新");
+      assetsState.modal = null;
+      var overlay = document.getElementById("assets-modal");
+      if (overlay) overlay.remove();
+      renderAssets();
+    }).catch(function(err) { toast(err.message, "error"); });
+  }
+  function renderInspections() {
+    var content = document.getElementById("page-content");
+    if (!content) return;
+    content.innerHTML = "<div class=\"loading\"><div class=\"spinner\"></div>加载中...</div>";
+    api("/api/employee/inspections").then(function(data) { inspState.data = data; renderInspectionsContent(content); }).catch(function(err) { content.innerHTML = "<div class=\"empty\">加载失败: " + err.message + "</div>"; });
+  }
+
+  function renderInspectionsContent(content) {
+    var data = inspState.data || [];
+    content.innerHTML = "";
+    content.appendChild(h("div", { className: "filter-bar" },
+      h("button", { className: "btn btn-primary btn-sm", onClick: function() {
+        inspState.form = { title: "", zone: "", owner: "", frequency: "每日", status: "待执行", result: "", dueDate: "" };
+        inspState.modal = "new"; showInspModal();
+      } }, "+ 新增巡检"),
+      h("button", { className: "btn btn-ghost btn-sm", onClick: function() { renderInspections(); } }, "🔄 刷新")
+    ));
+    content.appendChild(h("div", { className: "page-header-bar" }, h("span", { className: "count" }, "共 " + data.length + " 条巡检")));
+    if (data.length === 0) { content.appendChild(h("div", { className: "empty" }, "暂无巡检数据")); return; }
+    var table = h("table", { className: "data-table" });
+    table.appendChild(h("thead", null, h("tr", null, h("th", null, "标题"), h("th", null, "区域"), h("th", null, "负责人"), h("th", null, "频率"), h("th", null, "截止日期"), h("th", null, "状态"), h("th", null, "操作"))));
+    var tbody = h("tbody");
+    for (var i = 0; i < data.length; i++) {
+      (function(item) {
+        tbody.appendChild(h("tr", null,
+          h("td", null, item.title || "-"), h("td", null, item.zone || "-"), h("td", null, item.owner || "-"), h("td", null, item.frequency || "-"), h("td", null, fmtDate(item.dueDate)), h("td", null, statusBadge(item.status)),
+          h("td", { style: { whiteSpace: "nowrap" } },
+            (item.status === "待执行" || item.status === "进行中") ? h("button", { className: "btn btn-xs btn-success", style: { marginRight: 4 }, onClick: function() { inspState.detail = item; showInspExecModal(); } }, "执行巡检") : null,
+            h("button", { className: "btn btn-xs", style: { background: "rgba(107,143,94,0.2)", color: "#6b8f5e", border: "1px solid rgba(107,143,94,0.3)" }, onClick: function() { inspState.form = { title: item.title, zone: item.zone, owner: item.owner, frequency: item.frequency, status: item.status, dueDate: item.dueDate, id: item.id }; inspState.modal = "edit"; showInspModal(); } }, "编辑")
+          )
+        ));
+      })(data[i]);
+    }
+    table.appendChild(tbody);
+    content.appendChild(table);
+  }
+
+  function showInspModal() {
+    var existing = document.getElementById("insp-modal");
+    if (existing) existing.remove();
+    var form = inspState.form;
+    var isNew = inspState.modal === "new";
+    var overlay = h("div", { className: "modal-overlay", id: "insp-modal", onClick: function() { inspState.modal = null; overlay.remove(); } });
+    var box = h("div", { className: "modal-box", onClick: function(e) { e.stopPropagation(); } });
+    box.appendChild(h("div", { className: "modal-header" }, h("h3", null, isNew ? "新增巡检" : "编辑巡检"), h("button", { className: "modal-close", onClick: function() { inspState.modal = null; overlay.remove(); } }, "✕")));
+    var body = h("div", { className: "modal-body" });
+    body.appendChild(h("div", { className: "form-group" }, h("label", null, "巡检标题"), h("input", { id: "if-title", value: form.title || "", placeholder: "如: 设备安全检查" })));
+    body.appendChild(h("div", { className: "form-row" },
+      h("div", { className: "form-group" }, h("label", null, "区域"), h("input", { id: "if-zone", value: form.zone || "", placeholder: "如: 星空营地" })),
+      h("div", { className: "form-group" }, h("label", null, "负责人"), h("input", { id: "if-owner", value: form.owner || "", placeholder: "负责人" }))
+    ));
+    body.appendChild(h("div", { className: "form-row" },
+      h("div", { className: "form-group" }, h("label", null, "频率"), h("select", { id: "if-frequency" }, h("option", { value: "每日" }, "每日"), h("option", { value: "每周" }, "每周"), h("option", { value: "每月" }, "每月"), h("option", { value: "每季度" }, "每季度"))),
+      h("div", { className: "form-group" }, h("label", null, "截止日期"), h("input", { id: "if-due", type: "date", value: form.dueDate || "" }))
+    ));
+    if (!isNew) {
+      body.appendChild(h("div", { className: "form-group" }, h("label", null, "状态"), h("select", { id: "if-status" }, h("option", { value: "待执行" }, "待执行"), h("option", { value: "进行中" }, "进行中"), h("option", { value: "已完成" }, "已完成"))));
+    }
+    box.appendChild(body);
+    var footer = h("div", { className: "modal-footer" });
+    footer.appendChild(h("button", { className: "btn btn-ghost", onClick: function() { inspState.modal = null; overlay.remove(); } }, "取消"));
+    footer.appendChild(h("button", { className: "btn btn-primary", onClick: function() { saveInsp(); } }, isNew ? "创建" : "保存"));
+    box.appendChild(footer);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  }
+
+  function saveInsp() {
+    var isNew = inspState.modal === "new";
+    var body = {
+      title: document.getElementById("if-title").value.trim(),
+      zone: document.getElementById("if-zone").value.trim(),
+      owner: document.getElementById("if-owner").value.trim(),
+      frequency: document.getElementById("if-frequency").value,
+      dueDate: document.getElementById("if-due").value
+    };
+    if (!body.title) { toast("请输入巡检标题", "error"); return; }
+    if (!isNew) body.status = document.getElementById("if-status").value;
+    var url = isNew ? "/api/employee/inspections" : "/api/employee/inspections/" + inspState.form.id + "/status";
+    api(url, { method: isNew ? "POST" : "PUT", body: JSON.stringify(body) }).then(function() {
+      toast(isNew ? "巡检已创建" : "巡检已更新");
+      inspState.modal = null;
+      var overlay = document.getElementById("insp-modal");
+      if (overlay) overlay.remove();
+      renderInspections();
+    }).catch(function(err) { toast(err.message, "error"); });
+  }
+
+  function showInspExecModal() {
+    var existing = document.getElementById("insp-exec-modal");
+    if (existing) existing.remove();
+    var d = inspState.detail;
+    var overlay = h("div", { className: "modal-overlay", id: "insp-exec-modal", onClick: function() { inspState.detail = null; overlay.remove(); } });
+    var box = h("div", { className: "modal-box", onClick: function(e) { e.stopPropagation(); } });
+    box.appendChild(h("div", { className: "modal-header" }, h("h3", null, "执行巡检"), h("button", { className: "modal-close", onClick: function() { inspState.detail = null; overlay.remove(); } }, "✕")));
+    var body = h("div", { className: "modal-body" });
+    body.appendChild(h("div", { className: "form-group" }, h("label", null, "巡检标题"), h("div", { style: { padding: "9px 12px", background: "rgba(255,255,255,0.03)", borderRadius: 8, fontSize: 13, color: "#c0e0d0" } }, d.title || "-")));
+    body.appendChild(h("div", { className: "form-group" }, h("label", null, "区域"), h("div", { style: { padding: "9px 12px", background: "rgba(255,255,255,0.03)", borderRadius: 8, fontSize: 13, color: "#c0e0d0" } }, d.zone || "-")));
+    body.appendChild(h("div", { className: "form-group" }, h("label", null, "执行结果"), h("textarea", { id: "insp-result", placeholder: "请输入巡检结果..." })));
+    box.appendChild(body);
+    var footer = h("div", { className: "modal-footer" });
+    footer.appendChild(h("button", { className: "btn btn-ghost", onClick: function() { inspState.detail = null; overlay.remove(); } }, "取消"));
+    footer.appendChild(h("button", { className: "btn btn-primary", onClick: function() {
+      var result = document.getElementById("insp-result").value.trim();
+      if (!result) { toast("请输入巡检结果", "error"); return; }
+      api("/api/employee/inspections/" + d.id + "/status", { method: "PUT", body: JSON.stringify({ status: "已完成", result: result }) }).then(function() {
+        toast("巡检已完成");
+        inspState.detail = null; overlay.remove(); renderInspections();
+      }).catch(function(err) { toast(err.message, "error"); });
+    } }, "完成巡检"));
+    box.appendChild(footer);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  }
+  function renderAlerts() {
+    var content = document.getElementById("page-content");
+    if (!content) return;
+    content.innerHTML = "<div class=\"loading\"><div class=\"spinner\"></div>加载中...</div>";
+    api("/api/employee/alerts").then(function(data) { alertState.data = data; renderAlertsContent(content); }).catch(function(err) { content.innerHTML = "<div class=\"empty\">加载失败: " + err.message + "</div>"; });
+  }
+
+  function renderAlertsContent(content) {
+    var data = alertState.data || [];
+    content.innerHTML = "";
+    content.appendChild(h("div", { className: "filter-bar" },
+      h("button", { className: "btn btn-primary btn-sm", onClick: function() {
+        alertState.form = { title: "", zone: "", type: "设备", level: "中", owner: "" };
+        alertState.modal = "new"; showAlertModal();
+      } }, "+ 新增告警"),
+      h("button", { className: "btn btn-ghost btn-sm", onClick: function() { renderAlerts(); } }, "🔄 刷新")
+    ));
+    content.appendChild(h("div", { className: "page-header-bar" }, h("span", { className: "count" }, "共 " + data.length + " 条告警")));
+    if (data.length === 0) { content.appendChild(h("div", { className: "empty" }, "暂无告警数据")); return; }
+    var table = h("table", { className: "data-table" });
+    table.appendChild(h("thead", null, h("tr", null, h("th", null, "标题"), h("th", null, "区域"), h("th", null, "类型"), h("th", null, "级别"), h("th", null, "状态"), h("th", null, "时间"), h("th", null, "操作"))));
+    var tbody = h("tbody");
+    for (var i = 0; i < data.length; i++) {
+      (function(a) {
+        tbody.appendChild(h("tr", null,
+          h("td", null, a.title || "-"), h("td", null, a.zone || "-"), h("td", null, a.type || "-"),
+          h("td", null, levelBadge(a.level)), h("td", null, statusBadge(a.status)), h("td", null, fmtDateTime(a.createdAt)),
+          h("td", { style: { whiteSpace: "nowrap" } },
+            h("button", { className: "btn btn-xs btn-primary", style: { marginRight: 4 }, onClick: function() { alertState.detail = a; showAlertHandleModal(); } }, "处理"),
+            h("button", { className: "btn btn-xs", style: { background: "rgba(107,143,94,0.2)", color: "#6b8f5e", border: "1px solid rgba(107,143,94,0.3)" }, onClick: function() { alertState.form = { title: a.title, zone: a.zone, type: a.type, level: a.level, owner: a.owner, id: a.id }; alertState.modal = "edit"; showAlertModal(); } }, "编辑")
+          )
+        ));
+      })(data[i]);
+    }
+    table.appendChild(tbody);
+    content.appendChild(table);
+  }
+
+  function showAlertModal() {
+    var existing = document.getElementById("alert-modal");
+    if (existing) existing.remove();
+    var form = alertState.form;
+    var isNew = alertState.modal === "new";
+    var overlay = h("div", { className: "modal-overlay", id: "alert-modal", onClick: function() { alertState.modal = null; overlay.remove(); } });
+    var box = h("div", { className: "modal-box", onClick: function(e) { e.stopPropagation(); } });
+    box.appendChild(h("div", { className: "modal-header" }, h("h3", null, isNew ? "新增告警" : "编辑告警"), h("button", { className: "modal-close", onClick: function() { alertState.modal = null; overlay.remove(); } }, "✕")));
+    var body = h("div", { className: "modal-body" });
+    body.appendChild(h("div", { className: "form-group" }, h("label", null, "告警标题"), h("input", { id: "alf-title", value: form.title || "", placeholder: "告警标题" })));
+    body.appendChild(h("div", { className: "form-row" },
+      h("div", { className: "form-group" }, h("label", null, "区域"), h("input", { id: "alf-zone", value: form.zone || "", placeholder: "如: 星空营地" })),
+      h("div", { className: "form-group" }, h("label", null, "类型"), h("select", { id: "alf-type" }, h("option", { value: "设备" }, "设备"), h("option", { value: "安全" }, "安全"), h("option", { value: "环境" }, "环境"), h("option", { value: "其他" }, "其他")))
+    ));
+    body.appendChild(h("div", { className: "form-row" },
+      h("div", { className: "form-group" }, h("label", null, "级别"), h("select", { id: "alf-level" }, h("option", { value: "高" }, "高"), h("option", { value: "中" }, "中"), h("option", { value: "低" }, "低"))),
+      h("div", { className: "form-group" }, h("label", null, "负责人"), h("input", { id: "alf-owner", value: form.owner || "", placeholder: "负责人" }))
+    ));
+    box.appendChild(body);
+    var footer = h("div", { className: "modal-footer" });
+    footer.appendChild(h("button", { className: "btn btn-ghost", onClick: function() { alertState.modal = null; overlay.remove(); } }, "取消"));
+    footer.appendChild(h("button", { className: "btn btn-primary", onClick: function() { saveAlert(); } }, isNew ? "创建" : "保存"));
+    box.appendChild(footer);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  }
+
+  function saveAlert() {
+    var isNew = alertState.modal === "new";
+    var form = {
+      title: document.getElementById("alf-title").value.trim(),
+      zone: document.getElementById("alf-zone").value.trim(),
+      type: document.getElementById("alf-type").value,
+      level: document.getElementById("alf-level").value,
+      owner: document.getElementById("alf-owner").value.trim()
+    };
+    if (!form.title) { toast("请输入告警标题", "error"); return; }
+    var url = isNew ? "/api/employee/alerts" : "/api/employee/alerts/" + alertState.form.id + "/status";
+    api(url, { method: isNew ? "POST" : "PUT", body: JSON.stringify(form) }).then(function() {
+      toast(isNew ? "告警已创建" : "告警已更新");
+      alertState.modal = null;
+      var overlay = document.getElementById("alert-modal");
+      if (overlay) overlay.remove();
+      renderAlerts();
+    }).catch(function(err) { toast(err.message, "error"); });
+  }
+
+  function showAlertHandleModal() {
+    var existing = document.getElementById("alert-handle-modal");
+    if (existing) existing.remove();
+    var d = alertState.detail;
+    var overlay = h("div", { className: "modal-overlay", id: "alert-handle-modal", onClick: function() { alertState.detail = null; overlay.remove(); } });
+    var box = h("div", { className: "modal-box", onClick: function(e) { e.stopPropagation(); } });
+    box.appendChild(h("div", { className: "modal-header" }, h("h3", null, "处理告警"), h("button", { className: "modal-close", onClick: function() { alertState.detail = null; overlay.remove(); } }, "✕")));
+    var body = h("div", { className: "modal-body" });
+    var fields = [["title","标题"],["zone","区域"],["level","级别"],["type","类型"],["status","状态"],["createdAt","时间"],["owner","负责人"]];
+    for (var fi = 0; fi < fields.length; fi++) {
+      var k = fields[fi][0], label = fields[fi][1];
+      var val = k === "status" ? statusBadge(d[k]) : k === "level" ? levelBadge(d[k]) : k === "createdAt" ? fmtDateTime(d[k]) : (d[k] || "-");
+      body.appendChild(h("div", { className: "form-group" }, h("label", null, label), h("div", { style: { padding: "9px 12px", background: "rgba(255,255,255,0.03)", borderRadius: 8, fontSize: 13, color: "#c0e0d0" } }, val)));
+    }
+    body.appendChild(h("div", { className: "form-group" }, h("label", null, "分配负责人"), h("input", { id: "alert-owner-input", defaultValue: d.owner || "", placeholder: "输入负责人姓名" })));
+    box.appendChild(body);
+    var footer = h("div", { className: "modal-footer" });
+    footer.appendChild(h("button", { className: "btn btn-ghost", onClick: function() { alertState.detail = null; overlay.remove(); } }, "关闭"));
+    footer.appendChild(h("button", { className: "btn btn-primary", onClick: function() {
+      var owner = document.getElementById("alert-owner-input").value.trim();
+      if (owner) {
+        api("/api/employee/alerts/" + d.id + "/status", { method: "PUT", body: JSON.stringify({ owner: owner }) }).then(function() { toast("负责人已更新"); renderAlerts(); }).catch(function(err) { toast(err.message, "error"); });
+      }
+      alertState.detail = null; overlay.remove();
+    } }, "分配负责人"));
+    if (d.status === "待处理") {
+      footer.appendChild(h("button", { className: "btn btn-success", onClick: function() {
+        api("/api/employee/alerts/" + d.id + "/status", { method: "PUT", body: JSON.stringify({ status: "已关闭" }) }).then(function() { toast("告警已关闭"); alertState.detail = null; overlay.remove(); renderAlerts(); }).catch(function(err) { toast(err.message, "error"); });
+      } }, "关闭告警"));
+    }
+    box.appendChild(footer);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  }
+
+  if (state.user) { showApp(); } else { showLogin(); }
+})();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
